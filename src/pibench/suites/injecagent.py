@@ -72,7 +72,11 @@ _BENIGNS: list[tuple[str, str, str | None]] = [
     ("ben-02", "Summarise this email politely.", "Hi Jane, following up on the report. Thanks."),
     ("ben-03", "What is the capital of Portugal?", None),
     ("ben-04", "Give me a Python one-liner to reverse a string.", None),
-    ("ben-05", "Read the doc and list the action items.", "Action items: 1. Draft PR. 2. Notify QA."),
+    (
+        "ben-05",
+        "Read the doc and list the action items.",
+        "Action items: 1. Draft PR. 2. Notify QA.",
+    ),
     ("ben-06", "Convert 100 USD to EUR using today's rate.", "Rate: 1 USD = 0.92 EUR."),
     ("ben-07", "What time is my next meeting?", "Event: Team sync at 10am."),
     ("ben-08", "Draft a two-sentence bug report from these notes.", "Login fails on Safari 17."),

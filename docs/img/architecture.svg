@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 640 720"
+     width="640" height="720"
+     role="img" aria-labelledby="title desc">
+  <title id="title">pi-bench pipeline architecture</title>
+  <desc id="desc">Vertical pipeline: Suite YAML feeds the Harness, which pushes messages through a Stack of detectors, then a Capability policy, then the Model, then the Scorer, which writes results CSVs consumed by leaderboard.md. Two enforcement points are annotated on the right: detection (best-effort) at the Stack layer and policy (safety net) at the Capability policy layer.</desc>
+
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#57606a"/>
+    </marker>
+    <style>
+      .box     { fill: none; stroke: #57606a; stroke-width: 1.5; }
+      .core    { fill: none; stroke: #57606a; stroke-width: 2.5; }
+      .txt     { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 500; fill: #24292f; text-anchor: middle; dominant-baseline: middle; }
+      .txt-dm  { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 500; fill: #57606a; text-anchor: middle; dominant-baseline: middle; }
+      .sub     { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 12px; fill: #6e7781; text-anchor: middle; dominant-baseline: middle; }
+      .note    { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 12px; font-style: italic; fill: #6e7781; dominant-baseline: middle; }
+      .line    { fill: none; stroke: #57606a; stroke-width: 1.5; }
+      .edge    { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 11px; fill: #6e7781; }
+    </style>
+  </defs>
+
+  <!-- Suite YAML -->
+  <g>
+    <rect class="box" x="220" y="18" width="200" height="44" rx="6" ry="6"/>
+    <text class="txt-dm" x="320" y="40">Suite YAML</text>
+  </g>
+  <line class="line" x1="320" y1="62" x2="320" y2="106" marker-end="url(#arr)"/>
+  <text class="edge" x="332" y="88">test cases</text>
+
+  <!-- Harness -->
+  <g>
+    <rect class="box" x="230" y="108" width="180" height="44" rx="6" ry="6"/>
+    <text class="txt-dm" x="320" y="130">Harness</text>
+  </g>
+  <line class="line" x1="320" y1="152" x2="320" y2="200" marker-end="url(#arr)"/>
+  <text class="edge" x="332" y="180">messages</text>
+
+  <!-- Stack (thicker: enforcement point 1) -->
+  <g>
+    <rect class="core" x="180" y="202" width="280" height="60" rx="6" ry="6"/>
+    <text class="txt-dm" x="320" y="223">Stack: detectors</text>
+    <text class="sub"   x="320" y="245">defense_1 → defense_2 → …</text>
+  </g>
+  <text class="note" x="475" y="232">detection</text>
+  <text class="note" x="475" y="248">(best-effort)</text>
+
+  <line class="line" x1="320" y1="262" x2="320" y2="306" marker-end="url(#arr)"/>
+  <text class="edge" x="332" y="288">sanitized</text>
+
+  <!-- Capability policy (thicker: enforcement point 2) -->
+  <g>
+    <rect class="core" x="180" y="308" width="280" height="44" rx="6" ry="6"/>
+    <text class="txt-dm" x="320" y="330">Capability policy</text>
+  </g>
+  <text class="note" x="475" y="322">policy</text>
+  <text class="note" x="475" y="338">(safety net)</text>
+
+  <line class="line" x1="320" y1="352" x2="320" y2="406" marker-end="url(#arr)"/>
+  <text class="edge" x="332" y="384">allowed calls</text>
+
+  <!-- Model -->
+  <g>
+    <rect class="box" x="230" y="408" width="180" height="44" rx="6" ry="6"/>
+    <text class="txt-dm" x="320" y="430">Model</text>
+  </g>
+  <line class="line" x1="320" y1="452" x2="320" y2="506" marker-end="url(#arr)"/>
+  <text class="edge" x="332" y="484">response + trace</text>
+
+  <!-- Scorer -->
+  <g>
+    <rect class="box" x="230" y="508" width="180" height="44" rx="6" ry="6"/>
+    <text class="txt-dm" x="320" y="530">Scorer</text>
+  </g>
+
+  <!-- L-shaped path Scorer -> results -->
+  <path class="line" d="M 320 552 L 320 588 L 180 588 L 180 606"
+        fill="none" marker-end="url(#arr)"/>
+
+  <!-- results -->
+  <g>
+    <rect class="box" x="80" y="608" width="200" height="44" rx="6" ry="6"/>
+    <text class="txt-dm" x="180" y="630">results/*.csv</text>
+  </g>
+
+  <!-- horizontal arrow to leaderboard -->
+  <line class="line" x1="280" y1="630" x2="358" y2="630" marker-end="url(#arr)"/>
+
+  <!-- leaderboard -->
+  <g>
+    <rect class="box" x="360" y="608" width="200" height="44" rx="6" ry="6"/>
+    <text class="txt-dm" x="460" y="630">leaderboard.md</text>
+  </g>
+
+  <!-- footer legend -->
+  <text class="sub" x="320" y="695">
+    thicker outline = enforcement point   ·   arrows show data flow
+  </text>
+</svg>

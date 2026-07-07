@@ -1,11 +1,8 @@
 from __future__ import annotations
 
-import statistics
-from collections import defaultdict
+import csv
 from collections.abc import Iterable
 from pathlib import Path
-
-import csv
 
 from pibench.core.types import RunResult
 

@@ -6,7 +6,6 @@ from pibench.core.harness import run
 from pibench.core.registry import MODELS, SUITES
 from pibench.core.scorer import summarize, write_csv
 from pibench.core.stack import Stack
-
 from pibench.defenses import none as _none  # noqa: F401
 from pibench.models import mock as _mock  # noqa: F401
 from pibench.suites import injecagent as _inj  # noqa: F401
