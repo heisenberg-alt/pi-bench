@@ -36,6 +36,23 @@ pibench bench --stack none --model mock --suite injecagent-seed
 
 That's M1. Every future stack, model, and suite plugs into the same command.
 
+## Current leaderboard
+
+Auto-generated from `results/*.csv` via `pibench leaderboard`. Sorted by ASR ↓
+then FPR ↓.
+
+| Stack | Model | Suite | Seed | n | ASR ↓ | FPR ↓ | p95 (ms) ↓ | $ / 1k ↓ |
+| ----- | ----- | ----- | ---- | -- | ----: | ----: | ---------: | -------: |
+| `deberta` | `mock` | `injecagent-seed` | 42 | 20 | 0.000 | 0.000 | 350.1 | $0.0000 |
+| `none` | `mock` | `injecagent-seed` | 42 | 20 | 1.000 | 0.000 | 5.0 | $0.0000 |
+
+The `deberta` stack wraps ProtectAI's
+[`deberta-v3-base-prompt-injection-v2`](https://huggingface.co/protectai/deberta-v3-base-prompt-injection-v2)
+classifier (ungated, ~184 M params, CPU-inference friendly). Against the
+seed suite it eliminates every attack (ASR 1.000 → 0.000) with zero
+false positives and ~350 ms of added p95 latency. See [`leaderboard.md`](leaderboard.md)
+for the always-fresh version.
+
 ## Architecture
 
 ![pi-bench architecture](docs/img/architecture.svg)
@@ -95,10 +112,14 @@ class MyDefense(Defense):
 Models and suites follow the same pattern under `src/pibench/models/` and
 `src/pibench/suites/`.
 
-## What ships in M1 (this release)
+## What ships now (M1 + M2)
 
 - Core interfaces: `Verdict`, `Defense`, `Stack`, `Model`, `Suite`.
-- One defense: `none` (baseline; passes everything through).
+- Two defenses:
+  - `none` — baseline, passes everything through.
+  - `deberta-pi` — ProtectAI DeBERTa-v3 prompt-injection classifier (M2).
+    Disk-cached so reruns are free and byte-identical. Threshold and
+    device configurable per stack.
 - One model: `mock` — deterministic, offline. Simulates a naive agent that
   complies with obvious injected instructions so the harness runs green
   without a GPU or API keys. Real open-weight adapters (Qwen3-8B via
@@ -106,6 +127,8 @@ Models and suites follow the same pattern under `src/pibench/models/` and
 - One suite: `injecagent-seed` — 20 hand-picked cases in the InjecAgent
   indirect-injection style. Enough to demonstrate the harness end-to-end.
 - Scorer with canary-token detection and benign-side FPR tracking.
+- `pibench leaderboard` command that regenerates `leaderboard.md` from
+  every CSV under `results/`.
 - CSV output with pinned seed, model version, and defense versions.
 
 The roadmap below lists what fills the matrix in later releases.
@@ -115,8 +138,8 @@ The roadmap below lists what fills the matrix in later releases.
 | # | Milestone | Status |
 | - | --------- | ------ |
 | M1 | Vertical slice — one stack × one model × one suite, `pibench bench` prints and commits a CSV | done |
-| M2 | Second real defense (Prompt Guard 2 adapter) — visible ASR drop on the leaderboard | next |
-| M3 | Full adapter set × 4 models × 3 suites | planned |
+| M2 | Second real defense (Prompt Guard 2 adapter) — visible ASR drop on the leaderboard | done — DeBERTa v2, ASR 1.000 → 0.000 |
+| M3 | Full adapter set × 4 models × 3 suites | next |
 | M4 | `IndirectRAG-Bench` — own dataset, 500 examples, HF dataset card | planned |
 | M5 | `REPORT.md` with composability ablations | planned |
 | M6 | Launch: blog + demo video | planned |

@@ -1,17 +1,20 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Annotated
 
 import typer
 from rich.console import Console
 from rich.table import Table
 
 from pibench.core.harness import run
+from pibench.core.leaderboard import build_leaderboard
 from pibench.core.registry import DEFENSES, MODELS, SUITES
 from pibench.core.scorer import summarize, write_csv
 from pibench.core.stack import Stack
 
 # side-effect imports register concrete classes with the registries
+from pibench.defenses import deberta_pi as _deberta_defense  # noqa: F401
 from pibench.defenses import none as _none_defense  # noqa: F401
 from pibench.models import mock as _mock_model  # noqa: F401
 from pibench.suites import injecagent as _injecagent_suite  # noqa: F401
@@ -74,6 +77,15 @@ def list_(kind: str = typer.Argument(..., help="one of: stacks, models, suites, 
             console.print(f"- {name}")
         return
     raise typer.BadParameter("kind must be one of: stacks, models, suites, defenses")
+
+
+@app.command()
+def leaderboard(
+    out: Annotated[Path, typer.Option(help="Output markdown file.")] = Path("leaderboard.md"),
+) -> None:
+    """Regenerate leaderboard.md from every CSV in results/."""
+    build_leaderboard(_RESULTS_DIR, out)
+    console.print(f"[green]wrote[/] {out}")
 
 
 def _print_summary(stack: str, model: str, suite: str, seed: int, summary: dict) -> None:

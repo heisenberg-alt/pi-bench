@@ -1,0 +1,4 @@
+name: deberta
+defenses:
+  - type: deberta-pi
+    threshold: 0.5
