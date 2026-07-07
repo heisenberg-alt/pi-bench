@@ -7,7 +7,7 @@ from rich.console import Console
 from rich.table import Table
 
 from pibench.core.harness import run
-from pibench.core.registry import MODELS, SUITES
+from pibench.core.registry import DEFENSES, MODELS, SUITES
 from pibench.core.scorer import summarize, write_csv
 from pibench.core.stack import Stack
 
@@ -33,7 +33,8 @@ def bench(
     """Run one (stack, model, suite, seed) tuple and write a results CSV."""
     stack_path = _STACKS_DIR / f"{stack}.yaml"
     if not stack_path.exists():
-        raise typer.BadParameter(f"stack file not found: {stack_path}")
+        console.print(f"[red]error:[/] stack file not found: {stack_path}")
+        raise typer.Exit(code=1)
 
     stack_obj = Stack.from_yaml(stack_path)
     model_obj = MODELS.get_or_die(model)()
@@ -69,7 +70,6 @@ def list_(kind: str = typer.Argument(..., help="one of: stacks, models, suites, 
             console.print(f"- {name}")
         return
     if kind == "defenses":
-        from pibench.core.registry import DEFENSES
         for name in sorted(DEFENSES):
             console.print(f"- {name}")
         return
