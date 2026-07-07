@@ -40,15 +40,16 @@ That's M1. Every future stack, model, and suite plugs into the same command.
 
 - Core interfaces: `Verdict`, `Defense`, `Stack`, `Model`, `Suite`.
 - One defense: `none` (baseline; passes everything through).
-- Two models: `mock` (deterministic, offline) and a `qwen-local` scaffold
-  (loads Qwen3-8B via HF transformers when the extra is installed and a GPU
-  is available).
+- One model: `mock` — deterministic, offline. Simulates a naive agent that
+  complies with obvious injected instructions so the harness runs green
+  without a GPU or API keys. Real open-weight adapters (Qwen3-8B via
+  vLLM/HF) land in M3.
 - One suite: `injecagent-seed` — 20 hand-picked cases in the InjecAgent
   indirect-injection style. Enough to demonstrate the harness end-to-end.
 - Scorer with canary-token detection and benign-side FPR tracking.
 - CSV output with pinned seed, model version, and defense versions.
 
-Later releases fill the matrix (see `docs/plan.md` for the roadmap).
+The roadmap below lists what fills the matrix in later releases.
 
 ## Roadmap
 
