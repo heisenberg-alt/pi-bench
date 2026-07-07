@@ -82,7 +82,8 @@ class DebertaPIDefense(Defense):
         if self._pipe is None:
             self._pipe = _build_pipeline(self._model_id, self._device)
         result = self._pipe(text, truncation=True, max_length=512, top_k=None)
-        for entry in result[0] if isinstance(result[0], list) else result:
+        entries = result[0] if isinstance(result[0], list) else result
+        for entry in entries:
             if entry["label"].upper() == "INJECTION":
                 return float(entry["score"])
         return 0.0
