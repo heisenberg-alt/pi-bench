@@ -1,0 +1,2 @@
+# committed CSV results live at the repo root; raw per-case traces (added in M2)
+# will live under results/traces/ and are gitignored to keep the repo small.
