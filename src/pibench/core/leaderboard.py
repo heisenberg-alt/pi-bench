@@ -45,7 +45,7 @@ def _has_data(csv_path: Path) -> bool:
 
 
 def _aggregate(csv_path: Path) -> dict:
-    with csv_path.open(encoding="utf-8") as fh:
+    with csv_path.open(encoding="utf-8", newline="") as fh:
         rows = list(csv.DictReader(fh))
 
     if not rows:
