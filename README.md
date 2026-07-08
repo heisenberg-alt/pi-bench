@@ -140,7 +140,7 @@ The roadmap below lists what fills the matrix in later releases.
 | # | Milestone | Status |
 | - | --------- | ------ |
 | M1 | Vertical slice — one stack × one model × one suite, `pibench bench` prints and commits a CSV | done |
-| M2 | Second real defense (ProtectAI DeBERTa v2 PI classifier) — visible ASR drop on the leaderboard | done — ASR 1.000 → 0.000 |
+| M2 | Second real defense (ProtectAI DeBERTa v3 PI classifier) — visible ASR drop on the leaderboard | done — ASR 1.000 → 0.000 |
 | M3 | Full adapter set × 4 models × 3 suites | next |
 | M4 | `IndirectRAG-Bench` — own dataset, 500 examples, HF dataset card | planned |
 | M5 | `REPORT.md` with composability ablations | planned |
