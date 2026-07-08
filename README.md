@@ -20,7 +20,7 @@ Existing benchmarks grade single components:
 None grade the thing practitioners actually deploy: a **stack**
 (`deberta-pi + spotlighting + capability-policy in front of Qwen3-8B`).
 `pi-bench` fills that gap and makes every row one-command reproducible.
-Today one detector (DeBERTa v2) ships; the other pieces land in M3 and
+Today one detector (DeBERTa v3) ships; the other pieces land in M3 and
 later releases.
 
 ## Quickstart
