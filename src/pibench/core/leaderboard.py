@@ -40,13 +40,16 @@ def build_leaderboard(results_dir: Path, out_path: Path) -> str:
 def _has_data(csv_path: Path) -> bool:
     if csv_path.stat().st_size == 0:
         return False
-with csv_path.open(encoding="utf-8", newline="") as fh:
-    return next(csv.DictReader(fh), None) is not None
+    with csv_path.open(encoding="utf-8", newline="") as fh:
+        return next(csv.DictReader(fh), None) is not None
 
 
 def _aggregate(csv_path: Path) -> dict:
     with csv_path.open(encoding="utf-8") as fh:
         rows = list(csv.DictReader(fh))
+
+    if not rows:
+        raise ValueError(f"CSV has no data rows: {csv_path}")
 
     attacks = [r for r in rows if r["category"] == "attack"]
     benigns = [r for r in rows if r["category"] == "benign"]
