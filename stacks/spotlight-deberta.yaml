@@ -1,0 +1,5 @@
+name: spotlight-deberta
+defenses:
+  - type: spotlight
+  - type: deberta-pi
+    threshold: 0.5
