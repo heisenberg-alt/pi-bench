@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import tempfile
+import time
 from pathlib import Path
 
 from pibench.core.cache import DiskKV
@@ -62,3 +63,27 @@ def test_cache_replays_verdict_without_calling_scorer():
     assert calls["n"] == 1, "second call must hit the cache, not the scorer"
     assert v.score == 0.8
     assert v.action.value == "block"
+
+
+def test_cache_hit_reports_fresh_latency_not_stored():
+    """Regression: cache hits used to replay the cached Verdict verbatim,
+    including its *original* cold-inference latency. That misrepresented
+    the actual cost of a cache-hit call. This test locks in that a warm
+    hit reports a fresh, small wall-clock instead."""
+
+    def slow_scorer(_t: str) -> float:
+        time.sleep(0.1)  # 100 ms fake inference
+        return 0.8
+
+    cache = _isolated_cache()
+    d = DebertaPIDefense(threshold=0.5, cache=cache, scorer_fn=slow_scorer)
+
+    miss = d.check([_msg("payload")])
+    assert miss.latency_ms >= 100.0, "cache miss must include the inference wall-time"
+
+    hit = d.check([_msg("payload")])
+    assert hit.score == 0.8, "cache hit must preserve the stored score"
+    assert hit.latency_ms < miss.latency_ms, (
+        "cache hit must be materially faster than the miss"
+    )
+    assert hit.latency_ms < 50.0, "cache hit should be << the 100 ms fake inference"
