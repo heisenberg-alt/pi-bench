@@ -18,8 +18,10 @@ Existing benchmarks grade single components:
 - CyberSecEval → grades models under many attack classes.
 
 None grade the thing practitioners actually deploy: a **stack**
-(`PromptGuard + spotlighting + capability-policy in front of Qwen3-8B`).
+(`deberta-pi + spotlighting + capability-policy in front of Qwen3-8B`).
 `pi-bench` fills that gap and makes every row one-command reproducible.
+Today one detector (DeBERTa v3) ships; the other pieces land in M3 and
+later releases.
 
 ## Quickstart
 
@@ -34,7 +36,8 @@ pibench bench --stack none --model mock --suite injecagent-seed
 # prints a summary table with ASR, FPR, p95 latency, $/1k
 ```
 
-That's M1. Every future stack, model, and suite plugs into the same command.
+That baseline is the no-defense floor. Swap `--stack none` for `--stack deberta`
+to see a real defense in action; both rows already sit on the leaderboard below.
 
 ## Current leaderboard
 
@@ -89,9 +92,8 @@ Compose an existing set of defenses into a new stack:
 # stacks/my-stack.yaml
 name: my-stack
 defenses:
-  - type: promptguard
+  - type: deberta-pi
     threshold: 0.6
-  - type: spotlight
 ```
 
 Wrap an external classifier or write a heuristic as a new defense:
@@ -138,7 +140,7 @@ The roadmap below lists what fills the matrix in later releases.
 | # | Milestone | Status |
 | - | --------- | ------ |
 | M1 | Vertical slice — one stack × one model × one suite, `pibench bench` prints and commits a CSV | done |
-| M2 | Second real defense (Prompt Guard 2 adapter) — visible ASR drop on the leaderboard | done — DeBERTa v2, ASR 1.000 → 0.000 |
+| M2 | Second real defense (ProtectAI DeBERTa v3 PI classifier) — visible ASR drop on the leaderboard | done — ASR 1.000 → 0.000 |
 | M3 | Full adapter set × 4 models × 3 suites | next |
 | M4 | `IndirectRAG-Bench` — own dataset, 500 examples, HF dataset card | planned |
 | M5 | `REPORT.md` with composability ablations | planned |

@@ -30,6 +30,22 @@ def _write_row(path: Path, stack: str, blocked: bool, succeeded: bool, category:
         w.writerow(row)
 
 
+def test_leaderboard_skips_header_only_csv(tmp_path):
+    results = tmp_path / "results"
+    results.mkdir()
+
+    # header-only CSV (no data rows)
+    header_only = results / "empty.csv"
+    with header_only.open("w", encoding="utf-8", newline="") as fh:
+        csv.writer(fh).writerow(HEADER)
+
+    out = tmp_path / "leaderboard.md"
+    content = build_leaderboard(results, out)
+
+    assert out.exists()
+    assert "0 row(s)" in content
+
+
 def test_leaderboard_sorts_by_asr_then_fpr(tmp_path):
     results = tmp_path / "results"
     results.mkdir()

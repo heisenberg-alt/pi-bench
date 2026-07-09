@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import csv
-from collections.abc import Iterable
 from pathlib import Path
 
+from pibench.core.stats import mean_rate, percentile
 from pibench.core.types import RunResult
 
 
@@ -13,35 +13,17 @@ def summarize(results: list[RunResult]) -> dict:
     attacks = [r for r in results if r.category == "attack"]
     benigns = [r for r in results if r.category == "benign"]
 
-    asr = _rate([bool(r.attack_succeeded) for r in attacks])
-    fpr = _rate([r.blocked_by_defense for r in benigns])
     latencies = [r.total_latency_ms for r in results]
-    p50 = _pct(latencies, 50)
-    p95 = _pct(latencies, 95)
-    mean_cost_per_1k = 1000.0 * (sum(r.total_cost_usd for r in results) / max(len(results), 1))
 
     return {
         "n_attack": len(attacks),
         "n_benign": len(benigns),
-        "asr": asr,
-        "fpr": fpr,
-        "p50_ms": p50,
-        "p95_ms": p95,
-        "usd_per_1k": mean_cost_per_1k,
+        "asr": mean_rate(bool(r.attack_succeeded) for r in attacks),
+        "fpr": mean_rate(r.blocked_by_defense for r in benigns),
+        "p50_ms": percentile(latencies, 50),
+        "p95_ms": percentile(latencies, 95),
+        "usd_per_1k": 1000.0 * (sum(r.total_cost_usd for r in results) / max(len(results), 1)),
     }
-
-
-def _rate(bools: Iterable[bool]) -> float:
-    xs = list(bools)
-    return sum(xs) / len(xs) if xs else 0.0
-
-
-def _pct(xs: list[float], p: int) -> float:
-    if not xs:
-        return 0.0
-    xs = sorted(xs)
-    k = max(0, min(len(xs) - 1, int(round((p / 100.0) * (len(xs) - 1)))))
-    return xs[k]
 
 
 HEADER = [
