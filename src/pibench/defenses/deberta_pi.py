@@ -46,6 +46,7 @@ class DebertaPIDefense(Defense):
         self._pipe: Any | None = None
 
     def check(self, messages: list[Message]) -> Verdict:
+        t0 = time.perf_counter()
         untrusted = "\n\n".join(m.content for m in messages if not m.trusted)
         if not untrusted:
             return Verdict(
@@ -53,24 +54,27 @@ class DebertaPIDefense(Defense):
                 action=Action.ALLOW,
                 score=0.0,
                 reason="no untrusted content",
+                latency_ms=(time.perf_counter() - t0) * 1000.0,
             )
 
         key = hash_input(self.version, self._model_id, self._threshold, untrusted)
         cached = self._cache.get(key)
         if cached is not None:
-            return Verdict(**cached)
+            # Cache hit: reuse stored score/action but freshly measure the
+            # end-to-end wall-clock. Stored latency reflects the *original*
+            # cold inference and would misrepresent the actual cache-hit cost.
+            return Verdict(**cached).model_copy(
+                update={"latency_ms": (time.perf_counter() - t0) * 1000.0}
+            )
 
-        t0 = time.perf_counter()
         score = self._score(untrusted)
-        latency_ms = (time.perf_counter() - t0) * 1000.0
-
         action = Action.BLOCK if score >= self._threshold else Action.ALLOW
         verdict = Verdict(
             defense=self.name,
             action=action,
             score=score,
             reason=f"pi_prob={score:.3f} thr={self._threshold:.2f}",
-            latency_ms=latency_ms,
+            latency_ms=(time.perf_counter() - t0) * 1000.0,
             cost_usd=0.0,
         )
         self._cache.set(key, verdict.model_dump())
