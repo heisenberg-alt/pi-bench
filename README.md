@@ -20,8 +20,9 @@ Existing benchmarks grade single components:
 None grade the thing practitioners actually deploy: a **stack**
 (`deberta-pi + spotlighting + capability-policy in front of Qwen3-8B`).
 `pi-bench` fills that gap and makes every row one-command reproducible.
-Today one detector (DeBERTa v3) ships; the other pieces land in M3 and
-later releases.
+Two defenses ship today (DeBERTa v3 + spotlighting) with the composed
+`spotlight-deberta` stack already on the leaderboard — capability-policy
+and the model matrix land in the rest of M3.
 
 ## Quickstart
 
@@ -46,8 +47,16 @@ then FPR ↓.
 
 | Stack | Model | Suite | Seed | n | ASR ↓ | FPR ↓ | p95 (ms) ↓ | $ / 1k ↓ |
 | ----- | ----- | ----- | ---- | -- | ----: | ----: | ---------: | -------: |
-| `deberta` | `mock` | `injecagent-seed` | 42 | 20 | 0.000 | 0.000 | 350.1 | $0.0000 |
+| `deberta` | `mock` | `injecagent-seed` | 42 | 20 | 0.000 | 0.000 | 284.4 | $0.0000 |
+| `spotlight-deberta` | `mock` | `injecagent-seed` | 42 | 20 | 0.000 | 0.700 | 1103.2 | $0.0000 |
 | `none` | `mock` | `injecagent-seed` | 42 | 20 | 1.000 | 0.000 | 5.0 | $0.0000 |
+| `spotlight` | `mock` | `injecagent-seed` | 42 | 20 | 1.000 | 0.000 | 5.0 | $0.0000 |
+
+Compose finding: `spotlight-deberta` catches the same attacks as `deberta`
+alone but **jumps FPR from 0.000 to 0.700**. The spotlight delimiters look
+injection-like to a PI classifier that never saw them in training. Exactly
+the kind of second-order failure the composed-defense benchmark is
+designed to surface.
 
 The `deberta` stack wraps ProtectAI's
 [`deberta-v3-base-prompt-injection-v2`](https://huggingface.co/protectai/deberta-v3-base-prompt-injection-v2)
@@ -92,7 +101,8 @@ Compose an existing set of defenses into a new stack:
 # stacks/my-stack.yaml
 name: my-stack
 defenses:
-  - type: deberta-pi
+  - type: spotlight        # wrap untrusted content in delimiters
+  - type: deberta-pi       # then classify the wrapped payload
     threshold: 0.6
 ```
 
@@ -114,18 +124,23 @@ class MyDefense(Defense):
 Models and suites follow the same pattern under `src/pibench/models/` and
 `src/pibench/suites/`.
 
-## What ships now (M1 + M2)
+## What ships now (M1 + M2 + partial M3)
 
 - Core interfaces: `Verdict`, `Defense`, `Stack`, `Model`, `Suite`.
-- Two defenses:
+- Three defenses:
   - `none` — baseline, passes everything through.
   - `deberta-pi` — ProtectAI DeBERTa-v3 prompt-injection classifier (M2).
     Disk-cached so reruns are free and byte-identical. Threshold and
     device configurable per stack.
+  - `spotlight` — Hines-style delimiter/preamble wrapping of untrusted
+    content (partial M3). Deterministic, 0-cost. Its value shows up on
+    instruction-respecting models; against the mock it is a null-op on
+    ASR (as expected) but composing it *before* DeBERTa reveals a real
+    FPR regression — see the leaderboard note above.
 - One model: `mock` — deterministic, offline. Simulates a naive agent that
   complies with obvious injected instructions so the harness runs green
   without a GPU or API keys. Real open-weight adapters (Qwen3-8B via
-  vLLM/HF) land in M3.
+  vLLM/HF) land in the rest of M3.
 - One suite: `injecagent-seed` — 20 hand-picked cases in the InjecAgent
   indirect-injection style. Enough to demonstrate the harness end-to-end.
 - Scorer with canary-token detection and benign-side FPR tracking.
@@ -141,7 +156,7 @@ The roadmap below lists what fills the matrix in later releases.
 | - | --------- | ------ |
 | M1 | Vertical slice — one stack × one model × one suite, `pibench bench` prints and commits a CSV | done |
 | M2 | Second real defense (ProtectAI DeBERTa v3 PI classifier) — visible ASR drop on the leaderboard | done — ASR 1.000 → 0.000 |
-| M3 | Full adapter set × 4 models × 3 suites | next |
+| M3 | Full adapter set × 4 models × 3 suites; spotlighting + capability-policy | in progress — spotlight defense + `spotlight-deberta` composed stack landed |
 | M4 | `IndirectRAG-Bench` — own dataset, 500 examples, HF dataset card | planned |
 | M5 | `REPORT.md` with composability ablations | planned |
 | M6 | Launch: blog + demo video | planned |
