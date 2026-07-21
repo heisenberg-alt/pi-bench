@@ -149,11 +149,17 @@ Models and suites follow the same pattern under `src/pibench/models/` and
   - `capability-policy` — output-side tool-call allowlist (M3). Blocks
     any response whose tool calls fall outside the stack's configured
     capabilities — the safety net that works even when detection misses.
-- One model: `mock` — deterministic, offline. Simulates a naive agent that
-  complies with obvious injected instructions — echoing the payload *and*
-  emitting an exfil `send_email` tool call — so the harness runs green
-  without a GPU or API keys. Real open-weight adapters (Qwen3-8B via
-  vLLM/HF) land in the rest of M3.
+- Two models:
+  - `mock` — deterministic, offline. Simulates a naive agent that
+    complies with obvious injected instructions — echoing the payload *and*
+    emitting an exfil `send_email` tool call — so the harness runs green
+    without a GPU or API keys.
+  - `openai-compat` — chat-completions adapter for any OpenAI-compatible
+    endpoint (vLLM serve, llama.cpp, hosted). Configure via
+    `PIBENCH_OPENAI_BASE_URL` / `PIBENCH_OPENAI_MODEL` /
+    `PIBENCH_OPENAI_API_KEY`. Responses seed-cached to disk so committed
+    rows replay byte-identically. First reference rows (Qwen3-8B via
+    vLLM) land with the model matrix.
 - One suite: `injecagent-seed` — 20 hand-picked cases in the InjecAgent
   indirect-injection style. Enough to demonstrate the harness end-to-end.
 - Scorer with canary-token detection and benign-side FPR tracking.
