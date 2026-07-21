@@ -56,6 +56,7 @@ class TestCase(BaseModel):
     injected_context: str | None = None
     injection_source: Source | None = None
     canary_token: str | None = None
+    attacker_tools: list[str] = Field(default_factory=list)
     expected_behavior: str = ""
 
 

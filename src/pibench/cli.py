@@ -21,6 +21,7 @@ from pibench.defenses import spotlight as _spotlight_defense  # noqa: F401
 from pibench.models import mock as _mock_model  # noqa: F401
 from pibench.models import openai_compat as _openai_compat_model  # noqa: F401
 from pibench.suites import injecagent as _injecagent_suite  # noqa: F401
+from pibench.suites import injecagent_full as _injecagent_full_suite  # noqa: F401
 
 app = typer.Typer(add_completion=False, no_args_is_help=True)
 console = Console()

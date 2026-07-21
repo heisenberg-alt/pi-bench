@@ -47,10 +47,13 @@ then FPR ↓.
 
 | Stack | Model | Suite | Seed | n | ASR ↓ | FPR ↓ | p95 (ms) ↓ | $ / 1k ↓ |
 | ----- | ----- | ----- | ---- | -- | ----: | ----: | ---------: | -------: |
+| `policy` | `mock` | `injecagent-full-enhanced` | 42 | 1064 | 0.000 | 0.000 | 5.0 | $0.0000 |
 | `policy` | `mock` | `injecagent-seed` | 42 | 20 | 0.000 | 0.000 | 5.0 | $0.0000 |
 | `deberta` | `mock` | `injecagent-seed` | 42 | 20 | 0.000 | 0.000 | 284.4 | $0.0000 |
 | `spotlight-deberta` | `mock` | `injecagent-seed` | 42 | 20 | 0.000 | 0.700 | 1103.2 | $0.0000 |
+| `none` | `mock` | `injecagent-full-enhanced` | 42 | 1064 | 1.000 | 0.000 | 5.0 | $0.0000 |
 | `none` | `mock` | `injecagent-seed` | 42 | 20 | 1.000 | 0.000 | 5.0 | $0.0000 |
+| `spotlight` | `mock` | `injecagent-full-enhanced` | 42 | 1064 | 1.000 | 0.000 | 5.0 | $0.0000 |
 | `spotlight` | `mock` | `injecagent-seed` | 42 | 20 | 1.000 | 0.000 | 5.0 | $0.0000 |
 
 Compose finding: `spotlight-deberta` catches the same attacks as `deberta`
@@ -160,8 +163,17 @@ Models and suites follow the same pattern under `src/pibench/models/` and
     `PIBENCH_OPENAI_API_KEY`. Responses seed-cached to disk so committed
     rows replay byte-identically. First reference rows (Qwen3-8B via
     vLLM) land with the model matrix.
-- One suite: `injecagent-seed` — 20 hand-picked cases in the InjecAgent
-  indirect-injection style. Enough to demonstrate the harness end-to-end.
+- Three suites:
+  - `injecagent-seed` — 20 hand-picked cases in the InjecAgent
+    indirect-injection style. Fast, fully offline.
+  - `injecagent-full` / `injecagent-full-enhanced` — all 1,054 cases from
+    [InjecAgent](https://github.com/uiuc-kang-lab/InjecAgent) (510 direct
+    harm + 544 data stealing), pinned to a commit SHA and disk-cached so
+    the download happens once. Attack success includes attacker-tool
+    invocation, matching the source benchmark's criterion. The `enhanced`
+    setting prepends the "ignore all previous instructions" hacking
+    prompt; the naive mock only reacts to that marker, so base-setting
+    rows become meaningful once real model adapters land.
 - Scorer with canary-token detection and benign-side FPR tracking.
 - `pibench leaderboard` command that regenerates `leaderboard.md` from
   every CSV under `results/`.
@@ -175,7 +187,7 @@ The roadmap below lists what fills the matrix in later releases.
 | - | --------- | ------ |
 | M1 | Vertical slice — one stack × one model × one suite, `pibench bench` prints and commits a CSV | done |
 | M2 | Second real defense (ProtectAI DeBERTa v3 PI classifier) — visible ASR drop on the leaderboard | done — ASR 1.000 → 0.000 |
-| M3 | Full adapter set × 4 models × 3 suites; spotlighting + capability-policy | in progress — spotlighting, capability-policy, and composed stacks landed; model matrix + full suites remain |
+| M3 | Full adapter set × 4 models × 3 suites; spotlighting + capability-policy | in progress — spotlighting, capability-policy, openai-compat adapter, and full InjecAgent suite landed; open-weight leaderboard rows remain |
 | M4 | `IndirectRAG-Bench` — own dataset, 500 examples, HF dataset card | planned |
 | M5 | `REPORT.md` with composability ablations | planned |
 | M6 | Launch: blog + demo video | planned |
