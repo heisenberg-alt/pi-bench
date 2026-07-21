@@ -61,23 +61,15 @@ def bench(
 @app.command("list")
 def list_(kind: str = typer.Argument(..., help="one of: stacks, models, suites, defenses")) -> None:
     """List registered components."""
+    registries = {"models": MODELS, "suites": SUITES, "defenses": DEFENSES}
     if kind == "stacks":
-        for p in sorted(_STACKS_DIR.glob("*.yaml")):
-            console.print(f"- {p.stem}")
-        return
-    if kind == "models":
-        for name in sorted(MODELS):
-            console.print(f"- {name}")
-        return
-    if kind == "suites":
-        for name in sorted(SUITES):
-            console.print(f"- {name}")
-        return
-    if kind == "defenses":
-        for name in sorted(DEFENSES):
-            console.print(f"- {name}")
-        return
-    raise typer.BadParameter("kind must be one of: stacks, models, suites, defenses")
+        names = sorted(p.stem for p in _STACKS_DIR.glob("*.yaml"))
+    elif kind in registries:
+        names = sorted(registries[kind])
+    else:
+        raise typer.BadParameter("kind must be one of: stacks, models, suites, defenses")
+    for name in names:
+        console.print(f"- {name}")
 
 
 @app.command()

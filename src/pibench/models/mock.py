@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import hashlib
-import time
 
 from pibench.core.registry import MODELS
 from pibench.core.types import Message, ModelResponse, Source
@@ -27,12 +26,12 @@ class MockModel(Model):
         self._cost_per_call = cost_per_call_usd
 
     def complete(self, messages: list[Message], *, seed: int) -> ModelResponse:
-        t0 = time.perf_counter()
-        content = self._simulate(messages, seed)
-        elapsed_ms = (time.perf_counter() - t0) * 1000.0 + self._latency_ms
+        # Latency is the configured simulated value only. Measuring the
+        # wall-clock time of the simulation itself would add run-to-run
+        # jitter and break the byte-identical-rerun guarantee.
         return ModelResponse(
-            content=content,
-            latency_ms=elapsed_ms,
+            content=self._simulate(messages, seed),
+            latency_ms=self._latency_ms,
             cost_usd=self._cost_per_call,
             model_version=self.version,
         )

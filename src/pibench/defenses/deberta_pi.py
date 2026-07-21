@@ -98,10 +98,14 @@ def _build_pipeline(model_id: str, device: str) -> Any:
 
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     model = AutoModelForSequenceClassification.from_pretrained(model_id)
-    return pipeline(
+    pipe = pipeline(
         "text-classification",
         model=model,
         tokenizer=tokenizer,
         device=device,
         top_k=None,
     )
+    # Warm-up inference so one-time model-load / graph-compile cost is not
+    # attributed to (and cached into) the first case's verdict latency.
+    pipe("warm-up", truncation=True, max_length=512)
+    return pipe

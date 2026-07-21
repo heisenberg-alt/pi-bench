@@ -1,19 +1,19 @@
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 from typing import Literal
 
 from pydantic import BaseModel, Field
 
 
-class Role(str, Enum):
+class Role(StrEnum):
     SYSTEM = "system"
     USER = "user"
     ASSISTANT = "assistant"
     TOOL = "tool"
 
 
-class Source(str, Enum):
+class Source(StrEnum):
     """Where a message chunk originated. Untrusted sources are what defenses
     must scrutinise; trusted sources are the app's own instructions."""
 
@@ -30,7 +30,7 @@ class Message(BaseModel):
     trusted: bool = True
 
 
-class Action(str, Enum):
+class Action(StrEnum):
     ALLOW = "allow"
     SANITIZE = "sanitize"
     BLOCK = "block"

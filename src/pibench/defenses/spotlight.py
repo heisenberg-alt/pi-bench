@@ -15,8 +15,6 @@ References:
 
 from __future__ import annotations
 
-import time
-
 from pibench.core.registry import DEFENSES
 from pibench.core.types import Action, Message, Verdict
 from pibench.defenses.base import Defense
@@ -61,17 +59,17 @@ class SpotlightDefense(Defense):
                 reason="no untrusted content",
             )
 
-        t0 = time.perf_counter()
+        # Pure string formatting — deterministic and effectively free, so
+        # latency is reported as 0.0 to keep reruns byte-identical.
         payload = untrusted[-1].content
         wrapped = f"{self._preamble}\n{self._open}\n{payload}\n{self._close}"
-        latency_ms = (time.perf_counter() - t0) * 1000.0
 
         return Verdict(
             defense=self.name,
             action=Action.SANITIZE,
             score=0.0,
             reason="wrapped untrusted content in delimiters",
-            latency_ms=latency_ms,
+            latency_ms=0.0,
             cost_usd=0.0,
             modified_content=wrapped,
         )
