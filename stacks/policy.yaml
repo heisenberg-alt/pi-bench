@@ -1,0 +1,4 @@
+name: policy
+defenses:
+  - type: capability-policy
+    allowed_tools: [search, calendar_read]

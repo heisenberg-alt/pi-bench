@@ -1,0 +1,7 @@
+name: spotlight-deberta-policy
+defenses:
+  - type: spotlight
+  - type: deberta-pi
+    threshold: 0.5
+  - type: capability-policy
+    allowed_tools: [search, calendar_read]

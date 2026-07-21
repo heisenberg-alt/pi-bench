@@ -6,7 +6,7 @@ import yaml
 from pydantic import BaseModel
 
 from pibench.core.registry import DEFENSES
-from pibench.core.types import Action, Message, Verdict
+from pibench.core.types import Action, Message, ModelResponse, Verdict
 from pibench.defenses.base import Defense
 
 
@@ -46,6 +46,20 @@ class Stack:
             if v.action is Action.SANITIZE and v.modified_content is not None:
                 current = _apply_sanitize(current, v.modified_content)
         return current, verdicts
+
+    def check_output(self, messages: list[Message], response: ModelResponse) -> list[Verdict]:
+        """Run every defense's output-side check on the model response.
+        Defenses without an output check contribute no verdict. First BLOCK
+        stops the pipe."""
+        verdicts: list[Verdict] = []
+        for defense in self.defenses:
+            v = defense.check_output(messages, response)
+            if v is None:
+                continue
+            verdicts.append(v)
+            if v.action is Action.BLOCK:
+                break
+        return verdicts
 
 
 def _apply_sanitize(messages: list[Message], replacement: str) -> list[Message]:

@@ -14,6 +14,7 @@ from pibench.core.scorer import summarize, write_csv
 from pibench.core.stack import Stack
 
 # side-effect imports register concrete classes with the registries
+from pibench.defenses import capability_policy as _capability_policy_defense  # noqa: F401
 from pibench.defenses import deberta_pi as _deberta_defense  # noqa: F401
 from pibench.defenses import none as _none_defense  # noqa: F401
 from pibench.defenses import spotlight as _spotlight_defense  # noqa: F401
