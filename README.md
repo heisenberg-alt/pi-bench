@@ -49,18 +49,23 @@ then FPR ↓.
 | ----- | ----- | ----- | ---- | -- | ----: | ----: | ---------: | -------: |
 | `policy` | `mock` | `injecagent-full-enhanced` | 42 | 1064 | 0.000 | 0.000 | 5.0 | $0.0000 |
 | `policy` | `mock` | `injecagent-seed` | 42 | 20 | 0.000 | 0.000 | 5.0 | $0.0000 |
-| `deberta` | `mock` | `injecagent-seed` | 42 | 20 | 0.000 | 0.000 | 284.4 | $0.0000 |
-| `spotlight-deberta` | `mock` | `injecagent-seed` | 42 | 20 | 0.000 | 0.700 | 1103.2 | $0.0000 |
+| `deberta` | `mock` | `injecagent-seed` | 42 | 20 | 0.000 | 0.000 | 32.8 | $0.0000 |
+| `deberta` | `mock` | `injecagent-full-enhanced` | 42 | 1064 | 0.000 | 0.000 | 53.9 | $0.0000 |
+| `spotlight-deberta-policy` | `mock` | `injecagent-seed` | 42 | 20 | 0.000 | 0.700 | 40.3 | $0.0000 |
+| `spotlight-deberta` | `mock` | `injecagent-seed` | 42 | 20 | 0.000 | 0.700 | 40.3 | $0.0000 |
+| `spotlight-deberta-policy` | `mock` | `injecagent-full-enhanced` | 42 | 1064 | 0.000 | 0.700 | 63.1 | $0.0000 |
+| `spotlight-deberta` | `mock` | `injecagent-full-enhanced` | 42 | 1064 | 0.000 | 0.700 | 63.1 | $0.0000 |
 | `none` | `mock` | `injecagent-full-enhanced` | 42 | 1064 | 1.000 | 0.000 | 5.0 | $0.0000 |
 | `none` | `mock` | `injecagent-seed` | 42 | 20 | 1.000 | 0.000 | 5.0 | $0.0000 |
 | `spotlight` | `mock` | `injecagent-full-enhanced` | 42 | 1064 | 1.000 | 0.000 | 5.0 | $0.0000 |
 | `spotlight` | `mock` | `injecagent-seed` | 42 | 20 | 1.000 | 0.000 | 5.0 | $0.0000 |
 
 Compose finding: `spotlight-deberta` catches the same attacks as `deberta`
-alone but **jumps FPR from 0.000 to 0.700**. The spotlight delimiters look
-injection-like to a PI classifier that never saw them in training. Exactly
-the kind of second-order failure the composed-defense benchmark is
-designed to surface.
+alone but **jumps FPR from 0.000 to 0.700** — reproduced on both the
+20-case seed suite and the full 1,064-case InjecAgent suite. The
+spotlight delimiters look injection-like to a PI classifier that never
+saw them in training. Exactly the kind of second-order failure the
+composed-defense benchmark is designed to surface.
 
 Output-side finding: the `policy` stack blocks every attack at the
 tool-call boundary with **zero input detection** — ASR 0.000, FPR 0.000,
@@ -72,7 +77,9 @@ The `deberta` stack wraps ProtectAI's
 [`deberta-v3-base-prompt-injection-v2`](https://huggingface.co/protectai/deberta-v3-base-prompt-injection-v2)
 classifier (ungated, ~184 M params, CPU-inference friendly). Against the
 seed suite it eliminates every attack (ASR 1.000 → 0.000) with zero
-false positives and ~350 ms of added p95 latency. See [`leaderboard.md`](leaderboard.md)
+false positives and ~30 ms of added p95 latency (~55 ms on the full
+suite's longer tool responses; one-time model load is excluded via a
+warm-up inference). See [`leaderboard.md`](leaderboard.md)
 for the always-fresh version.
 
 ## Architecture
