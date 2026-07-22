@@ -184,6 +184,9 @@ Models and suites follow the same pattern under `src/pibench/models/` and
 - Scorer with canary-token detection and benign-side FPR tracking.
 - `pibench leaderboard` command that regenerates `leaderboard.md` from
   every CSV under `results/`.
+- `pibench report` command that regenerates [`REPORT.md`](REPORT.md) —
+  per-suite ablation grids, composition deltas with regression flags, and
+  Pareto-front marking — from the same CSVs.
 - CSV output with pinned seed, model version, and defense versions.
 
 The roadmap below lists what fills the matrix in later releases.
@@ -196,7 +199,7 @@ The roadmap below lists what fills the matrix in later releases.
 | M2 | Second real defense (ProtectAI DeBERTa v3 PI classifier) — visible ASR drop on the leaderboard | done — ASR 1.000 → 0.000 |
 | M3 | Full adapter set × 4 models × 3 suites; spotlighting + capability-policy | in progress — spotlighting, capability-policy, openai-compat adapter, and full InjecAgent suite landed; open-weight leaderboard rows remain |
 | M4 | `IndirectRAG-Bench` — own dataset, 500 examples, HF dataset card | planned |
-| M5 | `REPORT.md` with composability ablations | planned |
+| M5 | `REPORT.md` with composability ablations | done — `pibench report` generates ablation grids, composition deltas, Pareto front |
 | M6 | Launch: blog + demo video | planned |
 
 ## Non-goals

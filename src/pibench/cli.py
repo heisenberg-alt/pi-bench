@@ -10,6 +10,7 @@ from rich.table import Table
 from pibench.core.harness import run
 from pibench.core.leaderboard import build_leaderboard
 from pibench.core.registry import DEFENSES, MODELS, SUITES
+from pibench.core.report import build_report
 from pibench.core.scorer import summarize, write_csv
 from pibench.core.stack import Stack
 
@@ -81,6 +82,15 @@ def leaderboard(
 ) -> None:
     """Regenerate leaderboard.md from every CSV in results/."""
     build_leaderboard(_RESULTS_DIR, out)
+    console.print(f"[green]wrote[/] {out}")
+
+
+@app.command()
+def report(
+    out: Annotated[Path, typer.Option(help="Output markdown file.")] = Path("REPORT.md"),
+) -> None:
+    """Regenerate REPORT.md (composability ablations) from results/."""
+    build_report(_RESULTS_DIR, out)
     console.print(f"[green]wrote[/] {out}")
 
 

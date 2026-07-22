@@ -14,7 +14,7 @@ _DIV = "| ----- | ----- | ----- | ---- | -- | ----: | ----: | ---------: | -----
 
 def build_leaderboard(results_dir: Path, out_path: Path) -> str:
     rows = [
-        agg for p in sorted(results_dir.glob("*.csv")) if (agg := _aggregate(p)) is not None
+        agg for p in sorted(results_dir.glob("*.csv")) if (agg := aggregate_csv(p)) is not None
     ]
     rows.sort(key=lambda r: (r["asr"], r["fpr"], r["p95_ms"], r["usd_per_1k"]))
 
@@ -39,9 +39,10 @@ def build_leaderboard(results_dir: Path, out_path: Path) -> str:
     return content
 
 
-def _aggregate(csv_path: Path) -> dict | None:
+def aggregate_csv(csv_path: Path) -> dict | None:
     """Aggregate one result CSV into a leaderboard row, or ``None`` when the
-    file is empty / header-only."""
+    file is empty / header-only. Shared by the leaderboard and REPORT.md
+    generators."""
     with csv_path.open(encoding="utf-8", newline="") as fh:
         rows = list(csv.DictReader(fh))
 
