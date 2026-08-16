@@ -19,6 +19,7 @@ from pibench.defenses import capability_policy as _capability_policy_defense  # 
 from pibench.defenses import deberta_pi as _deberta_defense  # noqa: F401
 from pibench.defenses import none as _none_defense  # noqa: F401
 from pibench.defenses import spotlight as _spotlight_defense  # noqa: F401
+from pibench.models import local_models as _local_models  # noqa: F401
 from pibench.models import mock as _mock_model  # noqa: F401
 from pibench.models import openai_compat as _openai_compat_model  # noqa: F401
 from pibench.suites import injecagent as _injecagent_suite  # noqa: F401

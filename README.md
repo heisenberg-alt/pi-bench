@@ -22,7 +22,9 @@ None grade the thing practitioners actually deploy: a **stack**
 `pi-bench` fills that gap and makes every row one-command reproducible.
 Three defenses ship today (DeBERTa v3, spotlighting, capability-policy)
 with the composed `spotlight-deberta` and full `spotlight-deberta-policy`
-stacks defined — the model matrix lands in the rest of M3.
+stacks defined, and the open-weight model matrix now runs four local
+models (Qwen3-8B, Llama-3.1-8B, Mistral-7B, Qwen2.5-7B) through an
+OpenAI-compatible endpoint.
 
 ## Quickstart
 
@@ -42,43 +44,50 @@ to see a real defense in action; both rows already sit on the leaderboard below.
 
 ## Current leaderboard
 
-Auto-generated from `results/*.csv` via `pibench leaderboard`. Sorted by ASR ↓
-then FPR ↓.
+Auto-generated from `results/*.csv` via `pibench leaderboard` (36 rows; see
+[`leaderboard.md`](leaderboard.md) for the always-fresh full table). The
+matrix below is the four open-weight models run locally through Ollama on the
+20-case seed suite, as ASR per stack; benign-side FPR is called out beneath.
 
-| Stack | Model | Suite | Seed | n | ASR ↓ | FPR ↓ | p95 (ms) ↓ | $ / 1k ↓ |
-| ----- | ----- | ----- | ---- | -- | ----: | ----: | ---------: | -------: |
-| `policy` | `mock` | `injecagent-full-enhanced` | 42 | 1064 | 0.000 | 0.000 | 5.0 | $0.0000 |
-| `policy` | `mock` | `injecagent-seed` | 42 | 20 | 0.000 | 0.000 | 5.0 | $0.0000 |
-| `deberta` | `mock` | `injecagent-seed` | 42 | 20 | 0.000 | 0.000 | 32.8 | $0.0000 |
-| `deberta` | `mock` | `injecagent-full-enhanced` | 42 | 1064 | 0.000 | 0.000 | 53.9 | $0.0000 |
-| `spotlight-deberta-policy` | `mock` | `injecagent-seed` | 42 | 20 | 0.000 | 0.700 | 40.3 | $0.0000 |
-| `spotlight-deberta` | `mock` | `injecagent-seed` | 42 | 20 | 0.000 | 0.700 | 40.3 | $0.0000 |
-| `spotlight-deberta-policy` | `mock` | `injecagent-full-enhanced` | 42 | 1064 | 0.000 | 0.700 | 63.1 | $0.0000 |
-| `spotlight-deberta` | `mock` | `injecagent-full-enhanced` | 42 | 1064 | 0.000 | 0.700 | 63.1 | $0.0000 |
-| `none` | `mock` | `injecagent-full-enhanced` | 42 | 1064 | 1.000 | 0.000 | 5.0 | $0.0000 |
-| `none` | `mock` | `injecagent-seed` | 42 | 20 | 1.000 | 0.000 | 5.0 | $0.0000 |
-| `spotlight` | `mock` | `injecagent-full-enhanced` | 42 | 1064 | 1.000 | 0.000 | 5.0 | $0.0000 |
-| `spotlight` | `mock` | `injecagent-seed` | 42 | 20 | 1.000 | 0.000 | 5.0 | $0.0000 |
+| Model | `none` | `deberta` | `spotlight` | `spotlight-deberta` | `policy` | `spotlight-deberta-policy` |
+| ----- | ----: | ----: | ----: | ----: | ----: | ----: |
+| `mistral-7b` | 1.000 | 0.000 | 0.700 | 0.000 | 1.000 | 0.000 |
+| `qwen3-8b` | 0.500 | 0.000 | 0.400 | 0.000 | 0.500 | 0.000 |
+| `qwen2.5-7b` | 0.300 | 0.000 | 0.300 | 0.000 | 0.300 | 0.000 |
+| `llama3.1-8b` | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 |
+
+Every `spotlight-deberta` and `spotlight-deberta-policy` cell above carries
+**FPR 0.700** on the benign cases (the ASR is 0.000, but the honesty column
+is not) — the composition regression, reproduced on all four models.
+
+Cross-model finding: naive susceptibility to indirect injection spans the
+whole range — `mistral-7b` follows every seed injection (ASR 1.000),
+`qwen3-8b` half (0.500), `qwen2.5-7b` a third (0.300), and `llama3.1-8b`
+resists all ten (0.000). **DeBERTa collapses ASR to 0.000 for every model**,
+so the detector’s value holds across model families, not just the mock.
 
 Compose finding: `spotlight-deberta` catches the same attacks as `deberta`
-alone but **jumps FPR from 0.000 to 0.700** — reproduced on both the
-20-case seed suite and the full 1,064-case InjecAgent suite. The
-spotlight delimiters look injection-like to a PI classifier that never
-saw them in training. Exactly the kind of second-order failure the
-composed-defense benchmark is designed to surface.
+alone but **jumps FPR from 0.000 to 0.700** — reproduced across all four
+open-weight models *and* the mock, on both the 20-case seed suite and the
+full 1,064-case InjecAgent suite. The spotlight delimiters look
+injection-like to a PI classifier that never saw them in training. Exactly
+the kind of second-order failure the composed-defense benchmark is designed
+to surface.
 
-Output-side finding: the `policy` stack blocks every attack at the
-tool-call boundary with **zero input detection** — ASR 0.000, FPR 0.000,
-~0 ms added latency against the mock. The caveat: it only stops attacks
-with side-effects (tool misuse); text-only exfil needs the detection
-layer, which is why the composed posture is the thesis.
+Output-side finding: the `policy` stack blocks side-effecting tool calls at
+the capability boundary with **zero input detection**. Against the `mock`
+— which simulates tool misuse by emitting a `send_email` call — it drops
+ASR to 0.000 at ~0 ms added latency. On the seed suite the real models
+exfil via *text*, not tools, so `policy` there matches `none`; the
+tool-misuse channel it guards is the one the full InjecAgent suite
+exercises, whose cases carry attacker tools.
 
 The `deberta` stack wraps ProtectAI's
 [`deberta-v3-base-prompt-injection-v2`](https://huggingface.co/protectai/deberta-v3-base-prompt-injection-v2)
-classifier (ungated, ~184 M params, CPU-inference friendly). Against the
-seed suite it eliminates every attack (ASR 1.000 → 0.000) with zero
-false positives and ~30 ms of added p95 latency (~55 ms on the full
-suite's longer tool responses; one-time model load is excluded via a
+classifier (ungated, ~184 M params, CPU-inference friendly). Against every
+model on the seed suite it eliminates every attack (ASR → 0.000) with zero
+false positives and ~30 ms of added p95 latency on the mock (~55 ms on the
+full suite's longer tool responses; one-time model load is excluded via a
 warm-up inference). See [`leaderboard.md`](leaderboard.md)
 for the always-fresh version.
 
@@ -141,7 +150,7 @@ class MyDefense(Defense):
 Models and suites follow the same pattern under `src/pibench/models/` and
 `src/pibench/suites/`.
 
-## What ships now (M1 + M2 + partial M3)
+## What ships now (M1 + M2 + M3)
 
 - Core interfaces: `Verdict`, `Defense`, `Stack`, `Model`, `Suite` — with
   two enforcement points: `Defense.check()` on inputs and
@@ -159,17 +168,23 @@ Models and suites follow the same pattern under `src/pibench/models/` and
   - `capability-policy` — output-side tool-call allowlist (M3). Blocks
     any response whose tool calls fall outside the stack's configured
     capabilities — the safety net that works even when detection misses.
-- Two models:
+- Six models:
   - `mock` — deterministic, offline. Simulates a naive agent that
     complies with obvious injected instructions — echoing the payload *and*
     emitting an exfil `send_email` tool call — so the harness runs green
     without a GPU or API keys.
   - `openai-compat` — chat-completions adapter for any OpenAI-compatible
-    endpoint (vLLM serve, llama.cpp, hosted). Configure via
+    endpoint (vLLM serve, llama.cpp, Ollama, hosted). Configure via
     `PIBENCH_OPENAI_BASE_URL` / `PIBENCH_OPENAI_MODEL` /
-    `PIBENCH_OPENAI_API_KEY`. Responses seed-cached to disk so committed
-    rows replay byte-identically. First reference rows (Qwen3-8B via
-    vLLM) land with the model matrix.
+    `PIBENCH_OPENAI_API_KEY`. Forwards per-case tool schemas so real
+    models can emit the tool calls InjecAgent scores and the capability
+    policy guards. Responses seed-cached to disk so committed rows replay
+    byte-identically.
+  - `qwen3-8b`, `llama3.1-8b`, `mistral-7b`, `qwen2.5-7b` — the four
+    open-weight reference rows, each the `openai-compat` adapter pinned to
+    a model tag. Served locally through Ollama by default; point
+    `PIBENCH_OPENAI_BASE_URL` at vLLM / llama.cpp / a hosted provider to
+    swap the endpoint without touching the rows.
 - Three suites:
   - `injecagent-seed` — 20 hand-picked cases in the InjecAgent
     indirect-injection style. Fast, fully offline.
@@ -197,7 +212,7 @@ The roadmap below lists what fills the matrix in later releases.
 | - | --------- | ------ |
 | M1 | Vertical slice — one stack × one model × one suite, `pibench bench` prints and commits a CSV | done |
 | M2 | Second real defense (ProtectAI DeBERTa v3 PI classifier) — visible ASR drop on the leaderboard | done — ASR 1.000 → 0.000 |
-| M3 | Full adapter set × 4 models × 3 suites; spotlighting + capability-policy | in progress — spotlighting, capability-policy, openai-compat adapter, and full InjecAgent suite landed; open-weight leaderboard rows remain |
+| M3 | Full adapter set × 4 models × 3 suites; spotlighting + capability-policy | in progress — spotlighting, capability-policy, `openai-compat` adapter with per-case tool-schema forwarding, the full InjecAgent suite, and all four open-weight models on the seed matrix have landed; full-suite rows for every model still need a GPU box |
 | M4 | `IndirectRAG-Bench` — own dataset, 500 examples, HF dataset card | planned |
 | M5 | `REPORT.md` with composability ablations | done — `pibench report` generates ablation grids, composition deltas, Pareto front |
 | M6 | Launch: blog + demo video | planned |

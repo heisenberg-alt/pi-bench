@@ -14,4 +14,6 @@ class Model(ABC):
     version: str
 
     @abstractmethod
-    def complete(self, messages: list[Message], *, seed: int) -> ModelResponse: ...
+    def complete(
+        self, messages: list[Message], *, seed: int, tools: list[dict] | None = None
+    ) -> ModelResponse: ...

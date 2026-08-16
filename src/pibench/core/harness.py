@@ -19,7 +19,7 @@ def _run_one(case: TestCase, stack: Stack, model: Model, seed: int) -> RunResult
 
     response: ModelResponse | None = None
     if not blocked:
-        response = model.complete(sanitized, seed=seed)
+        response = model.complete(sanitized, seed=seed, tools=_build_tools(case))
         # second enforcement point: capability checks on the model output
         output_verdicts = stack.check_output(sanitized, response)
         verdicts = verdicts + output_verdicts
@@ -60,6 +60,33 @@ def _build_messages(case: TestCase) -> list[Message]:
             Message(role=role, content=case.injected_context, source=src, trusted=False)
         )
     return msgs
+
+
+# Legitimate capability surface offered to every model. Mirrors the
+# capability-policy allowlist so a compliant agent has safe tools to reach
+# for, while attacker tools remain outside the policy.
+_BENIGN_TOOLS = ("search", "calendar_read")
+
+
+def _build_tools(case: TestCase) -> list[dict]:
+    """OpenAI-format tool schemas offered to the model: the benign capability
+    surface plus this case's attacker tools. A model can only emit tool calls
+    for tools it is given, so presenting the attacker tools is what opens the
+    tool-misuse channel InjecAgent scores and what the output-side capability
+    policy then guards. The mock ignores this, so its rows are unchanged."""
+    names = list(dict.fromkeys([*_BENIGN_TOOLS, *case.attacker_tools]))
+    return [_tool_schema(n) for n in names]
+
+
+def _tool_schema(name: str) -> dict:
+    return {
+        "type": "function",
+        "function": {
+            "name": name,
+            "description": f"Tool: {name}",
+            "parameters": {"type": "object", "properties": {}, "additionalProperties": True},
+        },
+    }
 
 
 def _judge(case: TestCase, response: ModelResponse | None, blocked: bool) -> bool | None:

@@ -27,7 +27,11 @@ class MockModel(Model):
         self._latency_ms = latency_ms
         self._cost_per_call = cost_per_call_usd
 
-    def complete(self, messages: list[Message], *, seed: int) -> ModelResponse:
+    def complete(
+        self, messages: list[Message], *, seed: int, tools: list[dict] | None = None
+    ) -> ModelResponse:
+        # tools is accepted for interface parity but ignored: the mock fakes
+        # its own send_email call, so its rows stay byte-identical.
         # Latency is the configured simulated value only. Measuring the
         # wall-clock time of the simulation itself would add run-to-run
         # jitter and break the byte-identical-rerun guarantee.

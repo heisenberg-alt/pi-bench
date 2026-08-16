@@ -43,6 +43,19 @@ def _capture_transport(raw: dict, calls: list[dict]):
     return transport
 
 
+def _tools() -> list[dict]:
+    return [
+        {
+            "type": "function",
+            "function": {
+                "name": "search",
+                "description": "Tool: search",
+                "parameters": {"type": "object", "properties": {}},
+            },
+        }
+    ]
+
+
 def test_maps_roles_and_prefixes_tool_output() -> None:
     calls: list[dict] = []
     model = OpenAICompatModel(
@@ -125,3 +138,37 @@ def test_null_content_becomes_empty_string() -> None:
     )
     r = model.complete(_msgs(), seed=42)
     assert r.content == ""
+
+
+def test_forwards_tools_when_provided() -> None:
+    calls: list[dict] = []
+    model = OpenAICompatModel(
+        base_url="http://x/v1", cache=_isolated_cache(),
+        transport=_capture_transport(_raw_response(), calls),
+    )
+    tools = _tools()
+    model.complete(_msgs(), seed=42, tools=tools)
+    assert calls[0]["payload"]["tools"] == tools
+
+
+def test_omits_tools_key_when_absent() -> None:
+    calls: list[dict] = []
+    model = OpenAICompatModel(
+        base_url="http://x/v1", cache=_isolated_cache(),
+        transport=_capture_transport(_raw_response(), calls),
+    )
+    model.complete(_msgs(), seed=42)
+    assert "tools" not in calls[0]["payload"]
+
+
+def test_tools_participate_in_cache_key() -> None:
+    calls: list[dict] = []
+    cache = _isolated_cache()
+    model = OpenAICompatModel(
+        base_url="http://x/v1", cache=cache,
+        transport=_capture_transport(_raw_response(), calls),
+    )
+    model.complete(_msgs(), seed=42, tools=_tools())  # miss
+    model.complete(_msgs(), seed=42, tools=[])         # miss: empty != tools
+    model.complete(_msgs(), seed=42)                   # hit: none == empty
+    assert len(calls) == 2

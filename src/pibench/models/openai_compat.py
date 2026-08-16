@@ -70,7 +70,9 @@ class OpenAICompatModel(Model):
         self._transport = transport if transport is not None else _http_transport
         self.version = self._model
 
-    def complete(self, messages: list[Message], *, seed: int) -> ModelResponse:
+    def complete(
+        self, messages: list[Message], *, seed: int, tools: list[dict] | None = None
+    ) -> ModelResponse:
         payload = {
             "model": self._model,
             "messages": [_to_openai(m) for m in messages],
@@ -78,6 +80,12 @@ class OpenAICompatModel(Model):
             "max_tokens": self._max_tokens,
             "seed": seed,
         }
+        # Offer tools so the model can emit tool_calls: without a tools array
+        # the OpenAI schema forbids them, closing the tool-misuse channel that
+        # InjecAgent scores and the capability policy guards. Part of the
+        # payload, so it is folded into the cache key automatically.
+        if tools:
+            payload["tools"] = tools
 
         key = hash_input(self.name, payload)
         cached = self._cache.get(key)
