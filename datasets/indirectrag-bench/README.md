@@ -135,6 +135,21 @@ hf upload <user>/indirectrag-bench datasets/indirectrag-bench . --repo-type data
 - Success is canary/tool-based; it captures instruction-following on the
   injected task, not subtle partial compliance or refusals with leakage.
 
+## Citation
+
+If you use IndirectRAG-Bench, please cite:
+
+```bibtex
+@misc{indirectragbench2026,
+  title        = {IndirectRAG-Bench: Indirect Prompt-Injection Cases for Retrieval-Augmented Generation},
+  author       = {pi-bench contributors},
+  year         = {2026},
+  howpublished = {Hugging Face Hub},
+  url          = {https://huggingface.co/datasets/heisenberg-88/indirectrag-bench},
+  note         = {Part of pi-bench, https://github.com/heisenberg-alt/pi-bench}
+}
+```
+
 ## License
 
 MIT. Attack templates describe injection *patterns* for defensive evaluation;
