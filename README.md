@@ -97,7 +97,7 @@ blocks most cases at the input, before the model is ever called.)
 | `spotlight-deberta` | 0.000 | 1.000 | 48.3 |
 | `spotlight-deberta-policy` | 0.000 | 1.000 | 48.3 |
 
-Our own [`indirectrag-bench`](datasets/indirectrag-bench/README.md) poisons the
+Our own [`indirectrag-bench`](https://huggingface.co/datasets/heisenberg-88/indirectrag-bench) poisons the
 *retrieved context* instead of a tool output — and it flips the story.
 `qwen2.5-7b` follows **46.3%** of RAG injections, ~3× its InjecAgent tool-misuse
 rate (0.146). Crucially, **`policy` barely helps here (0.463 → 0.351)**: it
@@ -241,8 +241,8 @@ Models and suites follow the same pattern under `src/pibench/models/` and
     150 benign) where the poisoned channel is the *retrieved context*, not a
     tool output. 200 exfil + 150 tool attacks across 10 domains and 8
     injection techniques, each with a unique canary. Ships in-repo as a
-    pinned JSONL with a Hugging Face
-    [dataset card](datasets/indirectrag-bench/README.md) (M4).
+    pinned JSONL and published on the
+    [Hugging Face Hub](https://huggingface.co/datasets/heisenberg-88/indirectrag-bench) (M4).
 - Scorer with canary-token detection and benign-side FPR tracking.
 - `pibench leaderboard` command that regenerates `leaderboard.md` from
   every CSV under `results/`.
@@ -260,7 +260,7 @@ The roadmap below lists what fills the matrix in later releases.
 | M1 | Vertical slice — one stack × one model × one suite, `pibench bench` prints and commits a CSV | done |
 | M2 | Second real defense (ProtectAI DeBERTa v3 PI classifier) — visible ASR drop on the leaderboard | done — ASR 1.000 → 0.000 |
 | M3 | Full adapter set × 4 models × 3 suites; spotlighting + capability-policy | in progress — spotlighting, capability-policy, `openai-compat` adapter with per-case tool-schema forwarding, the full InjecAgent suite, and all four open-weight models on the seed matrix have landed; full-suite rows for every model still need a GPU box |
-| M4 | `IndirectRAG-Bench` — own dataset, 500 examples, HF dataset card | done — 350 attack / 150 benign RAG-injection cases, `indirectrag-bench` suite + dataset card |
+| M4 | `IndirectRAG-Bench` — own dataset, 500 examples, HF dataset card | done — 350 attack / 150 benign RAG-injection cases, `indirectrag-bench` suite, [published to HF](https://huggingface.co/datasets/heisenberg-88/indirectrag-bench) |
 | M5 | `REPORT.md` with composability ablations | done — `pibench report` generates ablation grids, composition deltas, Pareto front |
 | M6 | Launch: blog + demo video | planned |
 

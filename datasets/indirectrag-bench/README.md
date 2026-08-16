@@ -99,6 +99,14 @@ pibench bench --stack spotlight-deberta-policy --model qwen2.5-7b --suite indire
 The suite is registered as `indirectrag-bench` and ships in-repo as this pinned
 JSONL, so runs are fully offline and byte-identical.
 
+Or load it straight from the Hub:
+
+```python
+from datasets import load_dataset
+
+ds = load_dataset("heisenberg-88/indirectrag-bench", split="test")  # 500 rows
+```
+
 ## Reproducibility
 
 The dataset is generated deterministically (seed `20260816`):
@@ -109,13 +117,14 @@ python datasets/indirectrag-bench/generate.py
 
 Re-running reproduces `indirectrag_bench.jsonl` byte-for-byte.
 
-## Publishing to Hugging Face
+## Hugging Face
 
-This directory is a self-contained dataset repo (data + card). To publish:
+Published at **[`heisenberg-88/indirectrag-bench`](https://huggingface.co/datasets/heisenberg-88/indirectrag-bench)**.
+This directory is the self-contained source (data + card); to republish a fork:
 
 ```bash
-huggingface-cli login
-huggingface-cli upload <user>/indirectrag-bench datasets/indirectrag-bench . --repo-type dataset
+hf auth login
+hf upload <user>/indirectrag-bench datasets/indirectrag-bench . --repo-type dataset --exclude "__pycache__/*"
 ```
 
 ## Limitations
