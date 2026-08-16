@@ -44,7 +44,7 @@ to see a real defense in action; both rows already sit on the leaderboard below.
 
 ## Current leaderboard
 
-Auto-generated from `results/*.csv` via `pibench leaderboard` (36 rows; see
+Auto-generated from `results/*.csv` via `pibench leaderboard` (42 rows; see
 [`leaderboard.md`](leaderboard.md) for the always-fresh full table). The
 matrix below is the four open-weight models run locally through Ollama on the
 20-case seed suite, as ASR per stack; benign-side FPR is called out beneath.
@@ -66,6 +66,26 @@ whole range — `mistral-7b` follows every seed injection (ASR 1.000),
 resists all ten (0.000). **DeBERTa collapses ASR to 0.000 for every model**,
 so the detector’s value holds across model families, not just the mock.
 
+### Full suite — real tool-misuse (`qwen2.5-7b`, `injecagent-full`, 1,054 cases)
+
+| Stack | ASR ↓ | FPR ↓ | p95 (ms) ↓ |
+| ----- | ----: | ----: | ---------: |
+| `none` | 0.146 | 0.000 | 5635.3 |
+| `spotlight` | 0.105 | 0.000 | 5870.1 |
+| `deberta` | 0.074 | 0.000 | 4580.2 |
+| `spotlight-deberta` | 0.000 | 0.700 | 59.3 |
+| `spotlight-deberta-policy` | 0.000 | 0.700 | 59.3 |
+| `policy` | **0.000** | **0.000** | 5635.3 |
+
+Unlike the seed suite, these cases carry attacker tools — so the model can
+actually misuse them. `qwen2.5-7b` invokes the attacker tool on **14.6%** of
+the 1,054 cases undefended; `deberta` catches about half at the input
+(0.074); the `spotlight-deberta` stacks reach ASR 0.000 only by paying
+FPR 0.700. **Only `policy` reaches the ASR 0.000 / FPR 0.000 corner**, by
+blocking every out-of-policy tool call at the output while passing every
+benign one. (The `spotlight-deberta` p95 collapses to ~59 ms because DeBERTa
+blocks most cases at the input, before the model is ever called.)
+
 Compose finding: `spotlight-deberta` catches the same attacks as `deberta`
 alone but **jumps FPR from 0.000 to 0.700** — reproduced across all four
 open-weight models *and* the mock, on both the 20-case seed suite and the
@@ -74,13 +94,12 @@ injection-like to a PI classifier that never saw them in training. Exactly
 the kind of second-order failure the composed-defense benchmark is designed
 to surface.
 
-Output-side finding: the `policy` stack blocks side-effecting tool calls at
-the capability boundary with **zero input detection**. Against the `mock`
-— which simulates tool misuse by emitting a `send_email` call — it drops
-ASR to 0.000 at ~0 ms added latency. On the seed suite the real models
-exfil via *text*, not tools, so `policy` there matches `none`; the
-tool-misuse channel it guards is the one the full InjecAgent suite
-exercises, whose cases carry attacker tools.
+Output-side finding: this is the two-enforcement-point thesis on real data.
+Input detection is best-effort — `deberta` still lets 0.074 through on the
+full suite — but the output-side capability policy is the safety net that
+closes the tool channel regardless. It only acts on tool calls, so on the
+text-based seed suite it is a no-op (matches `none`); the full suite above is
+where it earns its place.
 
 The `deberta` stack wraps ProtectAI's
 [`deberta-v3-base-prompt-injection-v2`](https://huggingface.co/protectai/deberta-v3-base-prompt-injection-v2)
