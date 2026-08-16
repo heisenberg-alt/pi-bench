@@ -1,9 +1,10 @@
 # pi-bench leaderboard
 
-Auto-generated from `results/*.csv`. Sorted by ASR ↓ then FPR ↓. 42 row(s).
+Auto-generated from `results/*.csv`. Sorted by ASR ↓ then FPR ↓. 54 row(s).
 
 | Stack | Model | Suite | Seed | n | ASR ↓ | FPR ↓ | p95 (ms) ↓ | $ / 1k ↓ |
 | ----- | ----- | ----- | ---- | -- | ----: | ----: | ---------: | -------: |
+| `policy` | `mock` | `indirectrag-bench` | 42 | 500 | 0.000 | 0.000 | 5.0 | $0.0000 |
 | `policy` | `mock` | `injecagent-full-enhanced` | 42 | 1064 | 0.000 | 0.000 | 5.0 | $0.0000 |
 | `policy` | `mock` | `injecagent-seed` | 42 | 20 | 0.000 | 0.000 | 5.0 | $0.0000 |
 | `deberta` | `mock` | `injecagent-seed` | 42 | 20 | 0.000 | 0.000 | 32.8 | $0.0000 |
@@ -30,13 +31,24 @@ Auto-generated from `results/*.csv`. Sorted by ASR ↓ then FPR ↓. 42 row(s).
 | `spotlight-deberta` | `mistral-7b` | `injecagent-seed` | 42 | 20 | 0.000 | 0.700 | 3230.7 | $0.0000 |
 | `spotlight-deberta-policy` | `qwen3-8b` | `injecagent-seed` | 42 | 20 | 0.000 | 0.700 | 5480.3 | $0.0000 |
 | `spotlight-deberta` | `qwen3-8b` | `injecagent-seed` | 42 | 20 | 0.000 | 0.700 | 5480.3 | $0.0000 |
+| `spotlight-deberta-policy` | `mock` | `indirectrag-bench` | 42 | 500 | 0.000 | 1.000 | 48.3 | $0.0000 |
+| `spotlight-deberta-policy` | `qwen2.5-7b` | `indirectrag-bench` | 42 | 500 | 0.000 | 1.000 | 48.3 | $0.0000 |
+| `spotlight-deberta` | `mock` | `indirectrag-bench` | 42 | 500 | 0.000 | 1.000 | 48.3 | $0.0000 |
+| `spotlight-deberta` | `qwen2.5-7b` | `indirectrag-bench` | 42 | 500 | 0.000 | 1.000 | 48.3 | $0.0000 |
+| `deberta` | `mock` | `indirectrag-bench` | 42 | 500 | 0.040 | 0.087 | 45.2 | $0.0000 |
 | `deberta` | `qwen2.5-7b` | `injecagent-full` | 42 | 1064 | 0.074 | 0.000 | 4580.2 | $0.0000 |
+| `deberta` | `qwen2.5-7b` | `indirectrag-bench` | 42 | 500 | 0.100 | 0.087 | 3535.2 | $0.0000 |
 | `spotlight` | `qwen2.5-7b` | `injecagent-full` | 42 | 1064 | 0.105 | 0.000 | 5870.1 | $0.0000 |
 | `none` | `qwen2.5-7b` | `injecagent-full` | 42 | 1064 | 0.146 | 0.000 | 5635.3 | $0.0000 |
+| `none` | `mock` | `indirectrag-bench` | 42 | 500 | 0.234 | 0.000 | 5.0 | $0.0000 |
+| `spotlight` | `mock` | `indirectrag-bench` | 42 | 500 | 0.234 | 0.000 | 5.0 | $0.0000 |
 | `none` | `qwen2.5-7b` | `injecagent-seed` | 42 | 20 | 0.300 | 0.000 | 1824.9 | $0.0000 |
 | `policy` | `qwen2.5-7b` | `injecagent-seed` | 42 | 20 | 0.300 | 0.000 | 1824.9 | $0.0000 |
 | `spotlight` | `qwen2.5-7b` | `injecagent-seed` | 42 | 20 | 0.300 | 0.000 | 2092.5 | $0.0000 |
+| `policy` | `qwen2.5-7b` | `indirectrag-bench` | 42 | 500 | 0.351 | 0.000 | 4349.0 | $0.0000 |
+| `spotlight` | `qwen2.5-7b` | `indirectrag-bench` | 42 | 500 | 0.363 | 0.000 | 4295.3 | $0.0000 |
 | `spotlight` | `qwen3-8b` | `injecagent-seed` | 42 | 20 | 0.400 | 0.000 | 11969.9 | $0.0000 |
+| `none` | `qwen2.5-7b` | `indirectrag-bench` | 42 | 500 | 0.463 | 0.000 | 4349.0 | $0.0000 |
 | `none` | `qwen3-8b` | `injecagent-seed` | 42 | 20 | 0.500 | 0.000 | 12236.4 | $0.0000 |
 | `policy` | `qwen3-8b` | `injecagent-seed` | 42 | 20 | 0.500 | 0.000 | 12236.4 | $0.0000 |
 | `spotlight` | `mistral-7b` | `injecagent-seed` | 42 | 20 | 0.700 | 0.000 | 2758.2 | $0.0000 |

@@ -22,6 +22,7 @@ from pibench.defenses import spotlight as _spotlight_defense  # noqa: F401
 from pibench.models import local_models as _local_models  # noqa: F401
 from pibench.models import mock as _mock_model  # noqa: F401
 from pibench.models import openai_compat as _openai_compat_model  # noqa: F401
+from pibench.suites import indirectrag as _indirectrag_suite  # noqa: F401
 from pibench.suites import injecagent as _injecagent_suite  # noqa: F401
 from pibench.suites import injecagent_full as _injecagent_full_suite  # noqa: F401
 

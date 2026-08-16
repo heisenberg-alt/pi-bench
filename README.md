@@ -44,7 +44,7 @@ to see a real defense in action; both rows already sit on the leaderboard below.
 
 ## Current leaderboard
 
-Auto-generated from `results/*.csv` via `pibench leaderboard` (42 rows; see
+Auto-generated from `results/*.csv` via `pibench leaderboard` (54 rows; see
 [`leaderboard.md`](leaderboard.md) for the always-fresh full table). The
 matrix below is the four open-weight models run locally through Ollama on the
 20-case seed suite, as ASR per stack; benign-side FPR is called out beneath.
@@ -85,6 +85,28 @@ FPR 0.700. **Only `policy` reaches the ASR 0.000 / FPR 0.000 corner**, by
 blocking every out-of-policy tool call at the output while passing every
 benign one. (The `spotlight-deberta` p95 collapses to ~59 ms because DeBERTa
 blocks most cases at the input, before the model is ever called.)
+
+### IndirectRAG-Bench — retrieval-context injection (`qwen2.5-7b`, 500 cases)
+
+| Stack | ASR ↓ | FPR ↓ | p95 (ms) ↓ |
+| ----- | ----: | ----: | ---------: |
+| `none` | 0.463 | 0.000 | 4349.0 |
+| `spotlight` | 0.363 | 0.000 | 4295.3 |
+| `policy` | 0.351 | 0.000 | 4349.0 |
+| `deberta` | 0.100 | 0.087 | 3535.2 |
+| `spotlight-deberta` | 0.000 | 1.000 | 48.3 |
+| `spotlight-deberta-policy` | 0.000 | 1.000 | 48.3 |
+
+Our own [`indirectrag-bench`](datasets/indirectrag-bench/README.md) poisons the
+*retrieved context* instead of a tool output — and it flips the story.
+`qwen2.5-7b` follows **46.3%** of RAG injections, ~3× its InjecAgent tool-misuse
+rate (0.146). Crucially, **`policy` barely helps here (0.463 → 0.351)**: it
+guards the tool channel, but most RAG attacks exfil a canary through *text*,
+which no output tool-check can catch. `deberta` cuts ASR to 0.100 but
+false-positives on 8.7% of benign passages, and `spotlight-deberta` reaches ASR
+0.000 only at **FPR 1.000** — the delimiter/classifier regression is total on
+RAG text. The takeaway: on retrieval injection **no single defense is both safe
+and usable**, exactly the composed-defense frontier pi-bench exists to expose.
 
 Compose finding: `spotlight-deberta` catches the same attacks as `deberta`
 alone but **jumps FPR from 0.000 to 0.700** — reproduced across all four
@@ -204,7 +226,7 @@ Models and suites follow the same pattern under `src/pibench/models/` and
     a model tag. Served locally through Ollama by default; point
     `PIBENCH_OPENAI_BASE_URL` at vLLM / llama.cpp / a hosted provider to
     swap the endpoint without touching the rows.
-- Three suites:
+- Four suites:
   - `injecagent-seed` — 20 hand-picked cases in the InjecAgent
     indirect-injection style. Fast, fully offline.
   - `injecagent-full` / `injecagent-full-enhanced` — all 1,054 cases from
@@ -215,6 +237,12 @@ Models and suites follow the same pattern under `src/pibench/models/` and
     setting prepends the "ignore all previous instructions" hacking
     prompt; the naive mock only reacts to that marker, so base-setting
     rows become meaningful once real model adapters land.
+  - `indirectrag-bench` — 500 own-built RAG-injection cases (350 attack /
+    150 benign) where the poisoned channel is the *retrieved context*, not a
+    tool output. 200 exfil + 150 tool attacks across 10 domains and 8
+    injection techniques, each with a unique canary. Ships in-repo as a
+    pinned JSONL with a Hugging Face
+    [dataset card](datasets/indirectrag-bench/README.md) (M4).
 - Scorer with canary-token detection and benign-side FPR tracking.
 - `pibench leaderboard` command that regenerates `leaderboard.md` from
   every CSV under `results/`.
@@ -232,7 +260,7 @@ The roadmap below lists what fills the matrix in later releases.
 | M1 | Vertical slice — one stack × one model × one suite, `pibench bench` prints and commits a CSV | done |
 | M2 | Second real defense (ProtectAI DeBERTa v3 PI classifier) — visible ASR drop on the leaderboard | done — ASR 1.000 → 0.000 |
 | M3 | Full adapter set × 4 models × 3 suites; spotlighting + capability-policy | in progress — spotlighting, capability-policy, `openai-compat` adapter with per-case tool-schema forwarding, the full InjecAgent suite, and all four open-weight models on the seed matrix have landed; full-suite rows for every model still need a GPU box |
-| M4 | `IndirectRAG-Bench` — own dataset, 500 examples, HF dataset card | planned |
+| M4 | `IndirectRAG-Bench` — own dataset, 500 examples, HF dataset card | done — 350 attack / 150 benign RAG-injection cases, `indirectrag-bench` suite + dataset card |
 | M5 | `REPORT.md` with composability ablations | done — `pibench report` generates ablation grids, composition deltas, Pareto front |
 | M6 | Launch: blog + demo video | planned |
 
