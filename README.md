@@ -202,7 +202,7 @@ Models and suites follow the same pattern under `src/pibench/models/` and
     Disk-cached so reruns are free and byte-identical. Threshold and
     device configurable per stack.
   - `spotlight` — Hines-style delimiter/preamble wrapping of untrusted
-    content (partial M3). Deterministic, 0-cost. Its value shows up on
+    content (M3). Deterministic, 0-cost. Its value shows up on
     instruction-respecting models; against the mock it is a null-op on
     ASR (as expected) but composing it *before* DeBERTa reveals a real
     FPR regression — see the leaderboard note above.
@@ -259,7 +259,7 @@ The roadmap below lists what fills the matrix in later releases.
 | - | --------- | ------ |
 | M1 | Vertical slice — one stack × one model × one suite, `pibench bench` prints and commits a CSV | done |
 | M2 | Second real defense (ProtectAI DeBERTa v3 PI classifier) — visible ASR drop on the leaderboard | done — ASR 1.000 → 0.000 |
-| M3 | Full adapter set × 4 models × 3 suites; spotlighting + capability-policy | in progress — spotlighting, capability-policy, `openai-compat` adapter with per-case tool-schema forwarding, the full InjecAgent suite, and all four open-weight models on the seed matrix have landed; full-suite rows for every model still need a GPU box |
+| M3 | Full adapter set × 4 models × 3 suites; spotlighting + capability-policy | done — all four open-weight models × 6 stacks × the full 3-suite matrix (72 GPU rows, seed-pinned, run on Modal A10Gs). Note: `mistral-7b` emits essentially no tool calls through the tools API (1 in 3,123 responses), so its InjecAgent ASR of 0.000 reflects non-engagement with the tool channel, not robustness — its RAG-injection baseline is the weakest of the four (ASR 0.723) |
 | M4 | `IndirectRAG-Bench` — own dataset, 500 examples, HF dataset card | done — 350 attack / 150 benign RAG-injection cases, `indirectrag-bench` suite, [published to HF](https://huggingface.co/datasets/heisenberg-88/indirectrag-bench) |
 | M5 | `REPORT.md` with composability ablations | done — `pibench report` generates ablation grids, composition deltas, Pareto front |
 | M6 | Launch: blog + demo video | planned |

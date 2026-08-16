@@ -142,7 +142,7 @@ If you use IndirectRAG-Bench, please cite:
 ```bibtex
 @misc{indirectragbench2026,
   title        = {IndirectRAG-Bench: Indirect Prompt-Injection Cases for Retrieval-Augmented Generation},
-  author       = {pi-bench contributors},
+  author       = {Ankalgi, Sameer},
   year         = {2026},
   howpublished = {Hugging Face Hub},
   url          = {https://huggingface.co/datasets/heisenberg-88/indirectrag-bench},

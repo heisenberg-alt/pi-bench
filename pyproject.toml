@@ -5,7 +5,7 @@ description = "Composed-defense benchmark for prompt injection: grades entire de
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
-authors = [{ name = "pi-bench contributors" }]
+authors = [{ name = "Sameer Ankalgi" }]
 dependencies = [
     "pydantic>=2.7",
     "pyyaml>=6.0",
