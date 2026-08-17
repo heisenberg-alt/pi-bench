@@ -1,6 +1,6 @@
 # pi-bench composability report
 
-Auto-generated from `results/*.csv` via `pibench report`. 90 row(s).
+Auto-generated from `results/*.csv` via `pibench report`. 114 row(s).
 All metrics: lower is better. Pareto-front rows are marked with an asterisk.
 
 ## llama3.1-8b × indirectrag-bench
@@ -45,6 +45,28 @@ All metrics: lower is better. Pareto-front rows are marked with an asterisk.
 | `spotlight-deberta-policy` | `deberta` | -0.055 | +0.700 | -824.4 | yes |
 | `spotlight-deberta-policy` | `policy` | +0.000 | +0.700 | -938.1 | yes |
 | `spotlight-deberta-policy` | `spotlight` | -0.112 | +0.700 | -843.4 | yes |
+| `spotlight-deberta-policy` | `spotlight-deberta` | +0.000 | +0.000 | +0.0 |  |
+
+## llama3.1-8b × injecagent-full-enhanced
+
+| Stack | n | ASR ↓ | FPR ↓ | p95 (ms) ↓ | $ / 1k ↓ | Pareto |
+| ----- | -- | ----: | ----: | ---------: | -------: | :----: |
+| `deberta` | 1064 | 0.000 | 0.000 | 185.8 | $0.0000 | * |
+| `policy` | 1064 | 0.000 | 0.000 | 1078.9 | $0.0000 |  |
+| `spotlight-deberta-policy` | 1064 | 0.000 | 0.700 | 218.8 | $0.0000 |  |
+| `spotlight-deberta` | 1064 | 0.000 | 0.700 | 218.8 | $0.0000 |  |
+| `spotlight` | 1064 | 0.110 | 0.000 | 1291.2 | $0.0000 |  |
+| `none` | 1064 | 0.117 | 0.000 | 1078.9 | $0.0000 |  |
+
+### Composition deltas
+
+| Composed | vs component | ΔASR | ΔFPR | Δp95 (ms) | Regression |
+| -------- | ------------ | ---: | ---: | --------: | :--------: |
+| `spotlight-deberta` | `deberta` | +0.000 | +0.700 | +32.9 | yes |
+| `spotlight-deberta` | `spotlight` | -0.110 | +0.700 | -1072.4 | yes |
+| `spotlight-deberta-policy` | `deberta` | +0.000 | +0.700 | +32.9 | yes |
+| `spotlight-deberta-policy` | `policy` | +0.000 | +0.700 | -860.1 | yes |
+| `spotlight-deberta-policy` | `spotlight` | -0.110 | +0.700 | -1072.4 | yes |
 | `spotlight-deberta-policy` | `spotlight-deberta` | +0.000 | +0.000 | +0.0 |  |
 
 ## llama3.1-8b × injecagent-seed
@@ -111,6 +133,28 @@ All metrics: lower is better. Pareto-front rows are marked with an asterisk.
 | `spotlight-deberta-policy` | `deberta` | +0.000 | +0.700 | -3298.1 | yes |
 | `spotlight-deberta-policy` | `policy` | +0.000 | +0.700 | -4009.0 | yes |
 | `spotlight-deberta-policy` | `spotlight` | +0.000 | +0.700 | -4486.8 | yes |
+| `spotlight-deberta-policy` | `spotlight-deberta` | +0.000 | +0.000 | +0.0 |  |
+
+## mistral-7b × injecagent-full-enhanced
+
+| Stack | n | ASR ↓ | FPR ↓ | p95 (ms) ↓ | $ / 1k ↓ | Pareto |
+| ----- | -- | ----: | ----: | ---------: | -------: | :----: |
+| `deberta` | 1064 | 0.000 | 0.000 | 192.3 | $0.0000 | * |
+| `none` | 1064 | 0.000 | 0.000 | 5000.3 | $0.0000 |  |
+| `policy` | 1064 | 0.000 | 0.000 | 5000.3 | $0.0000 |  |
+| `spotlight` | 1064 | 0.000 | 0.000 | 5871.7 | $0.0000 |  |
+| `spotlight-deberta-policy` | 1064 | 0.000 | 0.700 | 207.2 | $0.0000 |  |
+| `spotlight-deberta` | 1064 | 0.000 | 0.700 | 207.2 | $0.0000 |  |
+
+### Composition deltas
+
+| Composed | vs component | ΔASR | ΔFPR | Δp95 (ms) | Regression |
+| -------- | ------------ | ---: | ---: | --------: | :--------: |
+| `spotlight-deberta` | `deberta` | +0.000 | +0.700 | +14.9 | yes |
+| `spotlight-deberta` | `spotlight` | +0.000 | +0.700 | -5664.5 | yes |
+| `spotlight-deberta-policy` | `deberta` | +0.000 | +0.700 | +14.9 | yes |
+| `spotlight-deberta-policy` | `policy` | +0.000 | +0.700 | -4793.0 | yes |
+| `spotlight-deberta-policy` | `spotlight` | +0.000 | +0.700 | -5664.5 | yes |
 | `spotlight-deberta-policy` | `spotlight-deberta` | +0.000 | +0.000 | +0.0 |  |
 
 ## mistral-7b × injecagent-seed
@@ -245,6 +289,28 @@ All metrics: lower is better. Pareto-front rows are marked with an asterisk.
 | `spotlight-deberta-policy` | `spotlight` | -0.105 | +0.700 | -5810.8 | yes |
 | `spotlight-deberta-policy` | `spotlight-deberta` | +0.000 | +0.000 | +0.0 |  |
 
+## qwen2.5-7b × injecagent-full-enhanced
+
+| Stack | n | ASR ↓ | FPR ↓ | p95 (ms) ↓ | $ / 1k ↓ | Pareto |
+| ----- | -- | ----: | ----: | ---------: | -------: | :----: |
+| `deberta` | 1064 | 0.000 | 0.000 | 175.7 | $0.0000 | * |
+| `policy` | 1064 | 0.000 | 0.000 | 2667.2 | $0.0000 |  |
+| `spotlight-deberta-policy` | 1064 | 0.000 | 0.700 | 221.6 | $0.0000 |  |
+| `spotlight-deberta` | 1064 | 0.000 | 0.700 | 221.6 | $0.0000 |  |
+| `spotlight` | 1064 | 0.114 | 0.000 | 2975.8 | $0.0000 |  |
+| `none` | 1064 | 0.157 | 0.000 | 2667.2 | $0.0000 |  |
+
+### Composition deltas
+
+| Composed | vs component | ΔASR | ΔFPR | Δp95 (ms) | Regression |
+| -------- | ------------ | ---: | ---: | --------: | :--------: |
+| `spotlight-deberta` | `deberta` | +0.000 | +0.700 | +45.9 | yes |
+| `spotlight-deberta` | `spotlight` | -0.114 | +0.700 | -2754.2 | yes |
+| `spotlight-deberta-policy` | `deberta` | +0.000 | +0.700 | +45.9 | yes |
+| `spotlight-deberta-policy` | `policy` | +0.000 | +0.700 | -2445.6 | yes |
+| `spotlight-deberta-policy` | `spotlight` | -0.114 | +0.700 | -2754.2 | yes |
+| `spotlight-deberta-policy` | `spotlight-deberta` | +0.000 | +0.000 | +0.0 |  |
+
 ## qwen2.5-7b × injecagent-seed
 
 | Stack | n | ASR ↓ | FPR ↓ | p95 (ms) ↓ | $ / 1k ↓ | Pareto |
@@ -309,6 +375,28 @@ All metrics: lower is better. Pareto-front rows are marked with an asterisk.
 | `spotlight-deberta-policy` | `deberta` | -0.006 | +0.700 | -6721.1 | yes |
 | `spotlight-deberta-policy` | `policy` | +0.000 | +0.700 | -6463.1 | yes |
 | `spotlight-deberta-policy` | `spotlight` | -0.006 | +0.700 | -6479.8 | yes |
+| `spotlight-deberta-policy` | `spotlight-deberta` | +0.000 | +0.000 | +0.0 |  |
+
+## qwen3-8b × injecagent-full-enhanced
+
+| Stack | n | ASR ↓ | FPR ↓ | p95 (ms) ↓ | $ / 1k ↓ | Pareto |
+| ----- | -- | ----: | ----: | ---------: | -------: | :----: |
+| `deberta` | 1064 | 0.000 | 0.000 | 197.3 | $0.0000 | * |
+| `policy` | 1064 | 0.000 | 0.000 | 7079.9 | $0.0000 |  |
+| `spotlight-deberta-policy` | 1064 | 0.000 | 0.700 | 244.1 | $0.0000 |  |
+| `spotlight-deberta` | 1064 | 0.000 | 0.700 | 244.1 | $0.0000 |  |
+| `spotlight` | 1064 | 0.004 | 0.000 | 7105.9 | $0.0000 |  |
+| `none` | 1064 | 0.046 | 0.000 | 7079.9 | $0.0000 |  |
+
+### Composition deltas
+
+| Composed | vs component | ΔASR | ΔFPR | Δp95 (ms) | Regression |
+| -------- | ------------ | ---: | ---: | --------: | :--------: |
+| `spotlight-deberta` | `deberta` | +0.000 | +0.700 | +46.8 | yes |
+| `spotlight-deberta` | `spotlight` | -0.004 | +0.700 | -6861.7 | yes |
+| `spotlight-deberta-policy` | `deberta` | +0.000 | +0.700 | +46.8 | yes |
+| `spotlight-deberta-policy` | `policy` | +0.000 | +0.700 | -6835.8 | yes |
+| `spotlight-deberta-policy` | `spotlight` | -0.004 | +0.700 | -6861.7 | yes |
 | `spotlight-deberta-policy` | `spotlight-deberta` | +0.000 | +0.000 | +0.0 |  |
 
 ## qwen3-8b × injecagent-seed
