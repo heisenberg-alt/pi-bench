@@ -171,7 +171,7 @@ def main(models: str = ",".join(MODEL_TAGS)) -> None:
     unknown = set(names) - set(MODEL_TAGS)
     if unknown:
         raise SystemExit(f"unknown model(s): {sorted(unknown)}; choose from {list(MODEL_TAGS)}")
-    for name, rows in zip(names, run_model.map(names)):
+    for name, rows in zip(names, run_model.map(names), strict=True):
         print(f"\n=== {name} ===")
         for row in rows:
             print(f"  {row}")

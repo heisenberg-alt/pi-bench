@@ -4,10 +4,10 @@
 stacks — model × detectors × defenses × capability policy — not individual
 detectors.
 
-| ASR ↓ | FPR ↓ | p95 latency ↓ | $ / 1k requests ↓ |
-| ----- | ----- | -------------- | ------------------ |
-
-Open-weight-first for reproducibility. Hosted models included as reference rows.
+Every row reports four numbers, all lower-is-better: **ASR**, **FPR**,
+**p95 latency**, and **$ / 1k requests**. Open-weight models first, for
+reproducibility; the adapter also targets any OpenAI-compatible hosted
+endpoint.
 
 ## Why another benchmark?
 
@@ -28,7 +28,7 @@ OpenAI-compatible endpoint.
 
 ## Quickstart
 
-```powershell
+```bash
 # install (editable, dev extras)
 pip install -e ".[dev]"
 
@@ -44,8 +44,8 @@ to see a real defense in action; both rows already sit on the leaderboard below.
 
 ## Current leaderboard
 
-Auto-generated from `results/*.csv` via `pibench leaderboard` (54 rows; see
-[`leaderboard.md`](leaderboard.md) for the always-fresh full table). The
+Auto-generated from `results/*.csv` via `pibench leaderboard`; see
+[`leaderboard.md`](leaderboard.md) for the always-fresh full table. The
 matrix below is the four open-weight models run locally through Ollama on the
 20-case seed suite, as ASR per stack; benign-side FPR is called out beneath.
 
@@ -65,6 +65,21 @@ whole range — `mistral-7b` follows every seed injection (ASR 1.000),
 `qwen3-8b` half (0.500), `qwen2.5-7b` a third (0.300), and `llama3.1-8b`
 resists all ten (0.000). **DeBERTa collapses ASR to 0.000 for every model**,
 so the detector’s value holds across model families, not just the mock.
+
+### Cross-model baselines — full suites, undefended
+
+| Model | `injecagent-full` (1,054 cases) | `indirectrag-bench` (500 cases) |
+| ----- | ------------------------------: | ------------------------------: |
+| `llama3.1-8b` | 0.117 | 0.186 |
+| `qwen3-8b` | 0.022 | 0.297 |
+| `qwen2.5-7b` | 0.146 | 0.463 |
+| `mistral-7b` | 0.000 * | 0.723 |
+
+\* `mistral-7b` emits essentially no tool calls through the tools API (1 in
+3,123 responses), so its InjecAgent score reflects non-engagement with the
+tool channel, not robustness — the same model is the most injectable through
+retrieved context. Susceptibility is channel-specific; a model's rank on one
+injection surface does not predict its rank on another.
 
 ### Full suite — real tool-misuse (`qwen2.5-7b`, `injecagent-full`, 1,054 cases)
 
@@ -111,7 +126,7 @@ and usable**, exactly the composed-defense frontier pi-bench exists to expose.
 Compose finding: `spotlight-deberta` catches the same attacks as `deberta`
 alone but **jumps FPR from 0.000 to 0.700** — reproduced across all four
 open-weight models *and* the mock, on both the 20-case seed suite and the
-full 1,064-case InjecAgent suite. The spotlight delimiters look
+full 1,054-case InjecAgent suite. The spotlight delimiters look
 injection-like to a PI classifier that never saw them in training. Exactly
 the kind of second-order failure the composed-defense benchmark is designed
 to surface.
@@ -235,8 +250,7 @@ Models and suites follow the same pattern under `src/pibench/models/` and
     the download happens once. Attack success includes attacker-tool
     invocation, matching the source benchmark's criterion. The `enhanced`
     setting prepends the "ignore all previous instructions" hacking
-    prompt; the naive mock only reacts to that marker, so base-setting
-    rows become meaningful once real model adapters land.
+    prompt; real-model enhanced rows are on the backlog below.
   - `indirectrag-bench` — 500 own-built RAG-injection cases (350 attack /
     150 benign) where the poisoned channel is the *retrieved context*, not a
     tool output. 200 exfil + 150 tool attacks across 10 domains and 8
@@ -251,7 +265,7 @@ Models and suites follow the same pattern under `src/pibench/models/` and
   Pareto-front marking — from the same CSVs.
 - CSV output with pinned seed, model version, and defense versions.
 
-The roadmap below lists what fills the matrix in later releases.
+The roadmap below tracks milestone status.
 
 ## Roadmap
 

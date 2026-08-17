@@ -35,7 +35,7 @@ def build_report(results_dir: Path, out_path: Path) -> str:
         "# pi-bench composability report",
         "",
         f"Auto-generated from `results/*.csv` via `pibench report`. {len(rows)} row(s).",
-        "All metrics: lower is better. Pareto-front rows are marked ★.",
+        "All metrics: lower is better. Pareto-front rows are marked with an asterisk.",
     ]
 
     for model, suite in sorted({(r["model"], r["suite"]) for r in rows}):
@@ -63,7 +63,7 @@ def _ablation_table(group: list[dict], front: list[dict]) -> list[str]:
         "| ----- | -- | ----: | ----: | ---------: | -------: | :----: |",
     ]
     for r in group:
-        star = "★" if r in front else ""
+        star = "*" if r in front else ""
         out.append(
             f"| `{r['stack']}` | {r['n']} | {r['asr']:.3f} | {r['fpr']:.3f} | "
             f"{r['p95_ms']:.1f} | ${r['usd_per_1k']:.4f} | {star} |"
@@ -77,7 +77,7 @@ def _delta_table(deltas: list[dict]) -> list[str]:
         "| -------- | ------------ | ---: | ---: | --------: | :--------: |",
     ]
     for d in deltas:
-        regression = "⚠" if d["d_asr"] > 0 or d["d_fpr"] > 0 else ""
+        regression = "yes" if d["d_asr"] > 0 or d["d_fpr"] > 0 else ""
         out.append(
             f"| `{d['composed']}` | `{d['component']}` | {d['d_asr']:+.3f} | "
             f"{d['d_fpr']:+.3f} | {d['d_p95']:+.1f} | {regression} |"

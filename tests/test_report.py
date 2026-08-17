@@ -76,9 +76,9 @@ def test_report_surfaces_fpr_regression(tmp_path: Path) -> None:
     assert out.exists()
     assert "## mock × suite-x" in content
     # composed vs deberta: ΔFPR +1.000 flagged as regression
-    assert "| `spotlight-deberta` | `deberta` | +0.000 | +1.000 | +10.0 | ⚠ |" in content
+    assert "| `spotlight-deberta` | `deberta` | +0.000 | +1.000 | +10.0 | yes |" in content
     # composed vs spotlight: ASR improved, FPR regressed -> still flagged
-    assert "| `spotlight-deberta` | `spotlight` | -1.000 | +1.000 | +35.0 | ⚠ |" in content
+    assert "| `spotlight-deberta` | `spotlight` | -1.000 | +1.000 | +35.0 | yes |" in content
 
 
 def test_report_is_deterministic(tmp_path: Path) -> None:
@@ -96,7 +96,7 @@ def test_report_pareto_column(tmp_path: Path) -> None:
         for line in ablation.splitlines()
         if line.startswith("| `")
     }
-    assert lines["`deberta`"].rstrip().endswith("★ |")
-    assert lines["`spotlight`"].rstrip().endswith("★ |")
+    assert lines["`deberta`"].rstrip().endswith("* |")
+    assert lines["`spotlight`"].rstrip().endswith("* |")
     # composed row is dominated by deberta -> no star
     assert lines["`spotlight-deberta`"].rstrip().endswith("|  |")
