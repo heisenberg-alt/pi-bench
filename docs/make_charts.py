@@ -103,7 +103,7 @@ def chart_undefended_asr(rows: list[dict]) -> str:
     parts = [
         text(24, 36, "Retrieved context is the softer injection channel",
              size=16, fill=INK, weight=600),
-        text(24, 58, "Undefended attack success rate (stack = none, seed 42) — "
+        text(24, 58, "Undefended attack success rate (stack = none, seed 42), "
                      "injecagent-full vs indirectrag-bench · lower is better",
              size=12.5, fill=INK_2),
         # legend (2 series)
@@ -147,8 +147,8 @@ def chart_undefended_asr(rows: list[dict]) -> str:
     parts.append(text(24, 400, "* Zero measures non-engagement, not robustness: Mistral "
                                "emitted one tool call in 3,123 responses,",
                       size=11.5, fill=MUTED))
-    parts.append(text(24, 416, "so it cannot invoke an attacker's tool through this channel "
-                               "— yet follows 72% of retrieved-context injections.",
+    parts.append(text(24, 416, "so it cannot invoke an attacker's tool through this channel, "
+                               "yet it follows 72% of retrieved-context injections.",
                       size=11.5, fill=MUTED))
     return svg_shell(w, h, "\n".join(parts))
 
@@ -200,7 +200,7 @@ def chart_asr_vs_fpr(rows: list[dict]) -> str:
         text(40, 85, "On the Pareto front", size=12.5, fill=INK_2),
         f'<circle cx="187" cy="81" r="5" fill="{MUTED}"/>',
         text(198, 85, "Dominated by another stack", size=12.5, fill=INK_2),
-        text(left, 114, "FPR — share of benign traffic blocked", size=12, fill=MUTED),
+        text(left, 114, "FPR: share of benign traffic blocked", size=12, fill=MUTED),
     ]
 
     for i in range(5):
@@ -221,7 +221,7 @@ def chart_asr_vs_fpr(rows: list[dict]) -> str:
                           anchor="middle", tabular=True))
     parts.append(f'<line x1="{left}" y1="{base}" x2="{right}" y2="{base}" '
                  f'stroke="{BASELINE}" stroke-width="1"/>')
-    parts.append(text((left + right) / 2, base + 40, "ASR — share of attacks that succeed",
+    parts.append(text((left + right) / 2, base + 40, "ASR: share of attacks that succeed",
                       size=12, fill=MUTED, anchor="middle"))
 
     # Pareto front line beneath the dots
