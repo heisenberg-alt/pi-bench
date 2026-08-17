@@ -37,6 +37,7 @@ MODEL_TAGS = {
     "llama3.1-8b": "llama3.1:8b",
     "mistral-7b": "mistral:7b",
     "qwen3-8b": "qwen3:8b",
+    "qwen2.5-7b": "qwen2.5:7b",
 }
 STACKS = [
     "none",
@@ -46,7 +47,7 @@ STACKS = [
     "spotlight-deberta",
     "spotlight-deberta-policy",
 ]
-SUITES = ["injecagent-full", "indirectrag-bench"]
+SUITES = ["injecagent-full-enhanced"]
 SEED = 42
 
 REPO = "/root/pi-bench"
@@ -171,7 +172,10 @@ def main(models: str = ",".join(MODEL_TAGS)) -> None:
     unknown = set(names) - set(MODEL_TAGS)
     if unknown:
         raise SystemExit(f"unknown model(s): {sorted(unknown)}; choose from {list(MODEL_TAGS)}")
-    for name, rows in zip(names, run_model.map(names), strict=True):
-        print(f"\n=== {name} ===")
-        for row in rows:
-            print(f"  {row}")
+    # Spawn and exit: with `modal run --detach`, spawned calls run fully
+    # server-side, so the run survives the local client (and this laptop)
+    # dying. Results land on the volume; fetch with `modal volume get`.
+    for name in names:
+        call = run_model.spawn(name)
+        print(f"spawned {name}: {call.object_id}")
+    print("detached; monitor at https://modal.com/apps or `modal volume ls pibench-data results`")
