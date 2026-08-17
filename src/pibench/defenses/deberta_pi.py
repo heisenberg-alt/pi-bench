@@ -9,7 +9,14 @@ without downloading ~750 MB of weights. Production callers leave it
 ``None``; the adapter lazy-loads the real HF pipeline the first time
 ``check()`` runs. Verdicts (score, action, latency) are disk-cached keyed
 by ``(model_id, threshold, untrusted_text)`` so reruns are free and
-byte-identical."""
+byte-identical.
+
+Cached verdicts replay their stored latency by design: committed result rows
+are cold-cache measurements (the honest per-request cost of the defense),
+and replaying stored values is what lets a warm rerun reproduce a committed
+CSV byte-for-byte. Do not "fix" cache hits to report fresh wall-clock; that
+would silently rewrite published p95 columns on the next regenerate (see
+PR #5 for the full rationale)."""
 
 from __future__ import annotations
 
