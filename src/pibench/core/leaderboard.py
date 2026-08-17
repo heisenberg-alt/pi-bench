@@ -12,10 +12,16 @@ _HEADER = "| Stack | Model | Suite | Seed | n | ASR ↓ | FPR ↓ | p95 (ms) ↓
 _DIV = "| ----- | ----- | ----- | ---- | -- | ----: | ----: | ---------: | -------: |"
 
 
-def build_leaderboard(results_dir: Path, out_path: Path) -> str:
-    rows = [
+def load_rows(results_dir: Path) -> list[dict]:
+    """Aggregate every result CSV under ``results_dir`` into leaderboard rows.
+    Single loading path shared by the leaderboard and REPORT.md generators."""
+    return [
         agg for p in sorted(results_dir.glob("*.csv")) if (agg := aggregate_csv(p)) is not None
     ]
+
+
+def build_leaderboard(results_dir: Path, out_path: Path) -> str:
+    rows = load_rows(results_dir)
     rows.sort(key=lambda r: (r["asr"], r["fpr"], r["p95_ms"], r["usd_per_1k"]))
 
     lines = [

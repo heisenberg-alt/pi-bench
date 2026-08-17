@@ -21,15 +21,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from pibench.core.leaderboard import aggregate_csv
+from pibench.core.leaderboard import load_rows
 
 _METRICS = ("asr", "fpr", "p95_ms", "usd_per_1k")
 
 
 def build_report(results_dir: Path, out_path: Path) -> str:
-    rows = [
-        agg for p in sorted(results_dir.glob("*.csv")) if (agg := aggregate_csv(p)) is not None
-    ]
+    rows = load_rows(results_dir)
 
     lines: list[str] = [
         "# pi-bench composability report",

@@ -142,11 +142,11 @@ def _to_tool_call(tc: dict) -> dict:
 def _http_transport(url: str, headers: dict, payload: dict, timeout_s: float) -> dict:
     if not url.startswith(("http://", "https://")):
         raise ValueError(f"unsupported endpoint URL scheme: {url}")
-    request = urllib.request.Request(  # noqa: S310 - scheme validated above
+    request = urllib.request.Request(  # scheme validated above
         url,
         data=json.dumps(payload).encode("utf-8"),
         headers=headers,
         method="POST",
     )
-    with urllib.request.urlopen(request, timeout=timeout_s) as resp:  # noqa: S310
+    with urllib.request.urlopen(request, timeout=timeout_s) as resp:
         return json.loads(resp.read().decode("utf-8"))

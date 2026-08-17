@@ -2,7 +2,7 @@
 cases (tool_output source) + 10 benign cases. Enough to demonstrate the
 harness end-to-end without pulling the full 1,054-case dataset.
 
-The real InjecAgent loader lands with M3 and pulls from
+The full loader lives in ``injecagent_full.py`` and pulls from
 https://github.com/uiuc-kang-lab/InjecAgent."""
 
 from __future__ import annotations

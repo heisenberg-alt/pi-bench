@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import json
 import urllib.request
+from collections.abc import Callable
 
 from pibench.core.cache import DiskKV, hash_input
 from pibench.core.registry import SUITES
@@ -47,7 +48,7 @@ class InjecAgentFull(Suite):
         setting: str = "base",
         sha: str = _PINNED_SHA,
         cache: DiskKV | None = None,
-        fetcher=None,
+        fetcher: Callable[[str], str] | None = None,
     ) -> None:
         if setting not in ("base", "enhanced"):
             raise ValueError(f"setting must be 'base' or 'enhanced', got {setting!r}")
@@ -99,7 +100,7 @@ def _benign_cases(suite_name: str) -> list[TestCase]:
 def _http_fetch(url: str) -> str:
     if not url.startswith("https://"):
         raise ValueError(f"refusing non-https dataset URL: {url}")
-    with urllib.request.urlopen(url, timeout=60.0) as resp:  # noqa: S310 - https enforced
+    with urllib.request.urlopen(url, timeout=60.0) as resp:  # https enforced above
         return resp.read().decode("utf-8")
 
 

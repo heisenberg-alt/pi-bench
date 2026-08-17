@@ -6,8 +6,7 @@ This is a *policy* defense — it doesn't classify content as malicious. It
 always emits SANITIZE when untrusted content is present. Its value only
 shows up when the target model actually respects the framing; against the
 deterministic mock model in this repo the ASR delta is zero, which is
-exactly what the leaderboard should show. Real drops surface once M3's
-open-weight adapters land.
+exactly what the leaderboard should show.
 
 References:
 - Hines et al., "Defending Against Indirect Prompt Injection Attacks With

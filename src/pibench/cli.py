@@ -36,7 +36,7 @@ _RESULTS_DIR = Path("results")
 @app.command()
 def bench(
     stack: str = typer.Option(..., help="Stack name (matches stacks/<name>.yaml)."),
-    model: str = typer.Option(..., help="Registered model name (e.g. 'mock', 'qwen-local')."),
+    model: str = typer.Option(..., help="Registered model name (e.g. 'mock', 'qwen3-8b')."),
     suite: str = typer.Option(..., help="Registered suite name (e.g. 'injecagent-seed')."),
     seed: int = typer.Option(42, help="Seed used for the model and pinned in the CSV."),
 ) -> None:
