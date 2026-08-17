@@ -105,8 +105,9 @@ the same combination produces a byte-identical file.
   Ollama by default: `qwen3-8b`, `llama3.1-8b`, `mistral-7b`, `qwen2.5-7b`.
 - **Suites (4):** `injecagent-seed` (20 offline cases),
   `injecagent-full` / `-enhanced` (all 1,054
-  [InjecAgent](https://github.com/uiuc-kang-lab/InjecAgent) cases, pinned to
-  a commit SHA and cached; attack success includes attacker tool invocation),
+  [InjecAgent](https://github.com/uiuc-kang-lab/InjecAgent) attack cases
+  plus ten benign probes, pinned to a commit SHA and cached; attack success
+  includes attacker tool invocation),
   and `indirectrag-bench` (500 purpose-built RAG injection cases, 350 attack
   and 150 benign with a unique canary per case, published on the
   [Hugging Face Hub](https://huggingface.co/datasets/heisenberg-88/indirectrag-bench)).
@@ -153,12 +154,11 @@ Models and suites follow the same pattern under `src/pibench/models/` and
 | M3 | Full matrix: 4 models, 6 stacks, 3 suites; spotlighting and capability policy | done; 72 GPU rows on Modal A10Gs, see [`docs/findings.md`](docs/findings.md) |
 | M4 | IndirectRAG-Bench, a 500-case dataset with a Hugging Face card | done; [published](https://huggingface.co/datasets/heisenberg-88/indirectrag-bench) |
 | M5 | `REPORT.md` with composability ablations | done |
-| M6 | Launch: blog and demo video | planned |
+| M6 | Launch: blog and demo video | blog drafted, publishing soon; video pending |
 
-Backlog: `injecagent-full-enhanced` rows for the four real models. This is
-the "ignore all previous instructions" escalation setting; only the mock has
-enhanced rows today. It needs a one-line `SUITES` change in `modal_run.py`
-and roughly 5 GPU hours.
+Backlog: none open from the original plan. The `injecagent-full-enhanced`
+rows for all four real models have landed; the per-suite tables and
+composition deltas are in [`REPORT.md`](REPORT.md).
 
 ## Non-goals
 
