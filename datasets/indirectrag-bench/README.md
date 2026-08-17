@@ -11,6 +11,7 @@ tags:
 - llm-security
 - red-teaming
 - ai-safety
+- benchmark
 size_categories:
 - n<1K
 pretty_name: IndirectRAG-Bench
@@ -49,6 +50,29 @@ Attacks span **10 domains** (finance, healthcare, legal, IT support, HR, travel,
 e-commerce, research, education, news) and **8 injection techniques**
 (`ignore_previous`, `instruction_marker`, `system_override`, `html_comment`,
 `admin_note`, `policy_spoof`, `urgent_update`, `markdown_aside`).
+
+## Baseline results
+
+Four open-weight models evaluated with [`pi-bench`](https://github.com/heisenberg-alt/pi-bench)
+(seed 42, served via Ollama Q4_K_M tags; full grid in the
+[leaderboard](https://github.com/heisenberg-alt/pi-bench/blob/main/leaderboard.md)):
+
+| Model | Undefended ASR ↓ | + DeBERTa-v3 PI classifier (ASR / FPR) |
+| ----- | ---------------: | -------------------------------------: |
+| `llama3.1:8b` | 0.186 | 0.066 / 0.087 |
+| `qwen3:8b` | 0.297 | 0.097 / 0.087 |
+| `qwen2.5:7b` | 0.463 | 0.100 / 0.087 |
+| `mistral:7b` | 0.723 | 0.260 / 0.087 |
+
+Two composition findings the dataset surfaces:
+
+- **Detector placement matters.** Composing spotlighting *before* the DeBERTa
+  classifier drives ASR to 0.000 on all four models — by flagging **every**
+  case, benign included (FPR 1.000). The delimiter wrapping itself trips the
+  classifier on RAG context, making the composed stack unusable here.
+- **Output-side tool allowlists only cover the tool channel.** A capability
+  policy clips tool-channel attacks (llama3.1: 0.186 → 0.080) but cannot touch
+  canary exfiltration through response text (mistral: 0.723, unchanged).
 
 ## Canary design
 
@@ -120,7 +144,9 @@ Re-running reproduces `indirectrag_bench.jsonl` byte-for-byte.
 ## Hugging Face
 
 Published at **[`heisenberg-88/indirectrag-bench`](https://huggingface.co/datasets/heisenberg-88/indirectrag-bench)**.
-This directory is the self-contained source (data + card); to republish a fork:
+The self-contained source (data + card + generator) lives in the pi-bench repo
+under [`datasets/indirectrag-bench/`](https://github.com/heisenberg-alt/pi-bench/tree/main/datasets/indirectrag-bench);
+to republish a fork:
 
 ```bash
 hf auth login
