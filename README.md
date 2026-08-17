@@ -264,6 +264,15 @@ The roadmap below lists what fills the matrix in later releases.
 | M5 | `REPORT.md` with composability ablations | done — `pibench report` generates ablation grids, composition deltas, Pareto front |
 | M6 | Launch: blog + demo video | planned |
 
+Backlog (nice-to-have, not milestone-gated):
+
+- `injecagent-full-enhanced` rows for the four real models — the "IGNORE ALL
+  PREVIOUS INSTRUCTIONS" escalation setting (only `mock` has enhanced rows
+  today). One-line `SUITES` change in `modal_run.py`, ~8.5k fresh calls ≈ 5
+  A10G GPU-hours. Answers two questions the base setting can't: does the
+  louder attack raise ASR, and does DeBERTa catch loud attacks more easily
+  than stealthy base-setting ones.
+
 ## Non-goals
 
 - No new detector or attack technique — we wrap and grade what exists.
